@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카드 목록</title>
+  <style>
+    .card-box {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px;
+      display: inline-block;
+      width: 200px;
+      text-align: center;
+    }
+    .card-box img {
+      width: 150px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>📇 카드 목록</h1>
+  <div>
+    {% for image_url in image_urls %}
+      <div class="card-box">
+        <!-- <img src="{{ card.image_url }}" alt="{{ card.name }}"> -->
+         
+        <img src="{{ image_url }}" alt="카드 이미지">
+        <h3>{{ card.name }}</h3>
+        <p>카테고리: {{ card.category }}</p>
+      </div>
+    {% empty %}
+      <p>등록된 카드가 없습니다.</p>
+    {% endfor %}
+  </div>
+</body>
+</html>
