@@ -11,7 +11,7 @@ class CardMaster(models.Model):
     category = models.CharField(max_length=50)
     description = models.TextField()
     image = models.ImageField(upload_to='cards/')
-    grade = models.CharField(max_length=20)
+    grade = models.CharField(max_length=5)
     def __str__(self):
         return f"{self.name} ({self.grade})"
 
