@@ -22,13 +22,15 @@
 <body>
   <h1>📇 카드 목록</h1>
   <div>
-    {% for image_url in image_urls %}
+    {% for card in cards %}
       <div class="card-box">
-        <!-- <img src="{{ card.image_url }}" alt="{{ card.name }}"> -->
+        <img src="{{ card.image.url }}" alt="{{ card.name }}">
          
-        <img src="{{ image_url }}" alt="카드 이미지">
+        <!-- <img src="{{ image_url }}" alt="카드 이미지"> -->
         <h3>{{ card.name }}</h3>
         <p>카테고리: {{ card.category }}</p>
+        <p>설명: {{ card.description }}</p>
+        <p> 등급:{{ card.grade }}</p>
       </div>
     {% empty %}
       <p>등록된 카드가 없습니다.</p>

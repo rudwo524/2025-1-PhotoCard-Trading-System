@@ -2,3 +2,5 @@
 
 ## 2025-1 자주프 개인프로젝트
 
+### Frontend : html & css, Backend: Django
+
