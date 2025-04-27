@@ -1,15 +1,14 @@
-from django.shortcuts import render
-
 # Create your views here.
 
 from django.http import HttpResponse
-from django.shortcuts import render
-from .models import CardMaster
+from django.shortcuts import render, redirect
+from .models import Card
 import os
 from django.conf import settings
+from .forms import CardForm
 
 def card_list(request):
-    cards = CardMaster.objects.all()
+    cards = Card.objects.all()
     # image_dir = os.path.join(settings.MEDIA_ROOT, 'cards')
     # try:
     #     image_filenames = os.listdir(image_dir)
@@ -18,3 +17,14 @@ def card_list(request):
     #     image_urls = []
     # print(image_urls)
     return render(request, 'cards/card_list.html', {'cards': cards})
+
+    
+def add_card(request):
+    # if request.method == 'POST':
+    #     form = CardForm(request.POST, request.FILES)
+    # else:
+    #     form = CardForm() 
+    # if form.is_valid():
+    #     form.save()
+    form = CardForm()
+    return render(request, 'cards/add_cards.html', {'form': form}) # 카드 리스트 페이지로 리디렉션 else: form = CardForm() return render(request, 'cards/add_card.html', {'form': form})

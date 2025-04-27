@@ -21,6 +21,7 @@
 </head>
 <body>
   <h1>📇 카드 목록</h1>
+  <a href="{% url 'add_card' %}" class="add-btn">카드 등록</a>
   <div>
     {% for card in cards %}
       <div class="card-box">
