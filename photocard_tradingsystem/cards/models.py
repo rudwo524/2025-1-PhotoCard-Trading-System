@@ -51,7 +51,7 @@ class Grade(models.Model):
 # 카드 카테고리
 class Category(models.Model):
     name = models.CharField(max_length=50)
-    updated_at = models.DateField()
+    Year = models.CharField(max_length=4)
 
     def __str__(self):
         return self.name

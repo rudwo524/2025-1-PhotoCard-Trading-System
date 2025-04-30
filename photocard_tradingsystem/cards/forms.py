@@ -9,9 +9,12 @@ class CardForm(forms.ModelForm):
 class CategoryForm(forms.ModelForm): 
     class Meta: 
         model = Category 
-        fields = ['name', 'updated_at']
+        fields = ['name', 'Year']
 
 class GradeForm(forms.ModelForm): 
     class Meta: 
         model = Grade 
         fields = ['name', 'probability']
+
+
+# created_at, delete_at, update_at

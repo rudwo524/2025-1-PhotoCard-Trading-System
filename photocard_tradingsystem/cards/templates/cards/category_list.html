@@ -1,0 +1,8 @@
+<h2>카테고리 목록</h2>
+<ul>
+  {% for category in categories %}
+    <li>{{ category.name }} - {{ category.Year }}</li>
+  {% empty %}
+    <li>등록된 카테고리가 없습니다.</li>
+  {% endfor %}
+</ul>
