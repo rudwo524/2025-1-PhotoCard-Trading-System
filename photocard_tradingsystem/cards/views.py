@@ -29,12 +29,29 @@ def add_card(request):
     form = CardForm()
     return render(request, 'cards/add_cards.html', {'form': form}) # 카드 리스트 페이지로 리디렉션 else: form = CardForm() return render(request, 'cards/add_card.html', {'form': form})
 
+# 카드 상세 페이지
+def card_detail(request, pk):
+    card = get_object_or_404(Card, pk=pk)
+    return render(request, 'cards/card_detail.html', {'card': card})
+
+# 카드 수정
+def update_card(request, pk):
+    card = get_object_or_404(Card, pk=pk)
+    if request.method == 'POST':
+        form = CardForm(request.POST, request.FILES, instance=card)
+        if form.is_valid():
+            form.save()
+            return redirect('card_detail', pk=card.pk)
+    else:
+        form = CardForm(instance=card)
+    return render(request, 'cards/card_form.html', {'form': form, 'card': card})
+
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('category_list')  # 등록 후 목록 페이지로 리디렉션
+            return redirect('categories')  # 등록 후 목록 페이지로 리디렉션
     else:
         form = CategoryForm()
     return render(request, 'cards/add_categories.html', {'form': form}) 
@@ -49,14 +66,46 @@ def category_update(request, pk):
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
-            return redirect('category_list')
+            return redirect('categories')
     else:
         form = CategoryForm(instance=category)
-    return render(request, 'categories/category_form.html', {'form': form})
+    return render(request, 'cards/category_update.html', {'form': form})
 
 def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
         category.delete()
-        return redirect('category_list')
-    return render(request, 'categories/category_confirm_delete.html', {'category': category})
+        return redirect('categories')
+    return render(request, 'cards/category_confirm_delete.html', {'category': category})
+
+def grade_list(request):
+    grades = Grade.objects.all()
+    return render(request, 'cards/grade_list.html', {'grades': grades})
+
+def add_grade(request):
+    if request.method == 'POST':
+        form = GradeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('grades')
+    else:
+        form = GradeForm()
+    return render(request, 'cards/grade_form.html', {'form': form})
+
+def update_grade(request, pk):
+    grade = get_object_or_404(Grade, pk=pk)
+    if request.method == 'POST':
+        form = GradeForm(request.POST, instance=grade)
+        if form.is_valid():
+            form.save()
+            return redirect('grades')
+    else:
+        form = GradeForm(instance=grade)
+    return render(request, 'cards/grade_form.html', {'form': form})
+
+def delete_grade(request, pk):
+    grade = get_object_or_404(Grade, pk=pk)
+    if request.method == 'POST':
+        grade.delete()
+        return redirect('grades')
+    return render(request, 'cards/confirm_delete_grade.html', {'grade': grade})

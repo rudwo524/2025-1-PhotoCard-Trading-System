@@ -1,0 +1,6 @@
+<h2>{% if card %}카드 수정{% else %}카드 등록{% endif %}</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">저장</button>
+</form>

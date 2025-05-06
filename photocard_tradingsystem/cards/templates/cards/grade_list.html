@@ -1,0 +1,11 @@
+<h2>등급 목록</h2>
+<a href="{% url 'add_grade' %}">등급 추가</a>
+<ul>
+    {% for grade in grades %}
+    <li>
+        {{ grade.name }} |
+        <a href="{% url 'update_grade' grade.pk %}">✏️수정</a> |
+        <a href="{% url 'delete_grade' grade.pk %}">🗑삭제</a>
+    </li>
+    {% endfor %}
+</ul>

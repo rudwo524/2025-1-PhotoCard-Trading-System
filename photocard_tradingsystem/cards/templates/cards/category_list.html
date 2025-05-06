@@ -1,7 +1,22 @@
-<h2>카테고리 목록</h2>
+<!-- <h2>카테고리 목록</h2>
 <ul>
   {% for category in categories %}
     <li>{{ category.name }} - {{ category.Year }}</li>
+  {% empty %}
+    <li>등록된 카테고리가 없습니다.</li>
+  {% endfor %}
+</ul> -->
+
+<h1>카테고리 목록</h1>
+<a href="{% url 'add_category' %}">카테고리 등록</a>
+
+<ul>
+  {% for category in categories %}
+    <li>
+      {{ category.name }} ({{ category.Year }})
+      <a href="{% url 'category_update' category.pk %}">✏️ 수정</a>
+      <a href="{% url 'category_delete' category.pk %}">🗑 삭제</a>
+    </li>               
   {% empty %}
     <li>등록된 카테고리가 없습니다.</li>
   {% endfor %}

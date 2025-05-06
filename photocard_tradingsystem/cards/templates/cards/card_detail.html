@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ card.name }} 상세 정보보</title>
+</head>
+<body>
+  <h1>{{ card.name }}</h1>
+  <p><strong>카테고리:</strong> {{ card.category.name }}</p>
+  <p><strong>등급:</strong> {{ card.grade.name }}</p>
+  <p><strong>설명:</strong> {{ card.description }}</p>
+  {% if card.image_url %}
+    <img src="{{ card.image_url.url }}" alt="{{ card.name }}" style="max-width:300px;">
+  {% endif %}
+  <p><a href="{% url 'update_card' card.pk %}">수정하기</a></p>
+  <p><a href="{% url 'card_list' %}">← 목록으로</a></p>
+</body>
+</html>

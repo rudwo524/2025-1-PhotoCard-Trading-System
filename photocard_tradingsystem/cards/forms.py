@@ -14,7 +14,7 @@ class CategoryForm(forms.ModelForm):
 class GradeForm(forms.ModelForm): 
     class Meta: 
         model = Grade 
-        fields = ['name', 'probability']
+        fields = ['name'] #, 'probability']
 
 
 # created_at, delete_at, update_at

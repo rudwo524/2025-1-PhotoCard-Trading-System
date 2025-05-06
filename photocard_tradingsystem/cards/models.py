@@ -42,7 +42,7 @@ User = get_user_model()
 # 등급 (레어도)
 class Grade(models.Model):
     name = models.CharField(max_length=50)
-    probability = models.FloatField()
+    #probability = models.FloatField()
 
     def __str__(self):
         return self.name

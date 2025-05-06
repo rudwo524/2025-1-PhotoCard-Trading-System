@@ -1,0 +1,9 @@
+<h2>등급 {% if form.instance.pk %}수정{% else %}추가{% endif %}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">저장</button>
+</form>
+
+<a href="{% url 'grades' %}">목록으로 돌아가기</a>
