@@ -176,6 +176,7 @@ def draw_card(request):
         'form': form,
         'card': card,
         'my_cards': my_cards,
+        'users': users
     })
 
 
