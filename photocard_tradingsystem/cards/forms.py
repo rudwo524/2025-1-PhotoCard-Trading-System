@@ -1,5 +1,5 @@
 from django import forms 
-from .models import Card, Category, Grade
+from .models import Card, Category, Grade, CreatedCard
 
 class CardForm(forms.ModelForm): 
     class Meta: 
@@ -15,6 +15,12 @@ class GradeForm(forms.ModelForm):
     class Meta: 
         model = Grade 
         fields = ['name'] #, 'probability']
+
+class DrawCardForm(forms.ModelForm):
+    class Meta:
+        model = CreatedCard
+        fields = ['card', 'owner', 'trade_info'] #, 'created_at', 'deleted_at']
+
 
 
 # created_at, delete_at, update_at

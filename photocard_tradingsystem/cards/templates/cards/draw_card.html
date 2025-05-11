@@ -1,0 +1,59 @@
+<h2>카드 발급 결과</h2>
+
+{% if users %}
+  {% for user in users %}
+    <h3>{{ user.username }}</h3>
+  {% endfor %}
+{% else %}
+  <p>등록된 유저 정보가 없습니다.</p>
+{% endif %}
+
+{% if card %}
+  <div style="border: 1px solid #ccc; padding: 10px; display: inline-block;">
+    <img src="{{ card.image_url.url }}" alt="{{ card.name }}" width="200"><br>
+    <strong>{{ card.name }}</strong><br>
+    카테고리: {{ card.category }}<br>
+    등급: {{ card.grade }}<br>
+    설명: {{ card.description }}<br>
+  </div>
+
+  <form method="post">
+      {% csrf_token %}
+      {{ form.card.as_hidden }}
+      {{ form.owner.as_hidden }}
+      {{ form.trade_info.as_p }}
+      <button type="submit">이 카드 저장</button>
+  </form>
+{% else %}
+  <p>발급 가능한 카드가 없습니다.</p>
+{% endif %}
+
+<p><a href="{% url 'draw_card' %}">다시 뽑기</a></p>
+<p><a href="{% url 'card_list' %}">카드 목록으로</a></p>
+
+<hr>
+<h3>지정 유저의 보유 카드 목록</h3>
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>카드 이름</th>
+      <th>등급</th>
+      <th>카테고리</th>
+      <th>발급일</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uc in my_cards %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ uc.card.name }}</td>
+        <td>{{ uc.card.grade }}</td>
+        <td>{{ uc.card.category }}</td>
+        <td>{{ uc.acquired_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">보유 카드 없음</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
