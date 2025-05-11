@@ -1,13 +1,6 @@
-<h2>카드 발급 결과</h2>
+<h2>카드 발급</h2>
 
-{% if users %}
-  {% for user in users %}
-    <h3>{{ user.username }}</h3>
-  {% endfor %}
-{% else %}
-  <p>등록된 유저 정보가 없습니다.</p>
-{% endif %}
-
+<!-- 카드 정보 출력 (서버에서 랜덤으로 선택된 카드) -->
 {% if card %}
   <div style="border: 1px solid #ccc; padding: 10px; display: inline-block;">
     <img src="{{ card.image_url.url }}" alt="{{ card.name }}" width="200"><br>
@@ -16,23 +9,31 @@
     등급: {{ card.grade }}<br>
     설명: {{ card.description }}<br>
   </div>
-
-  <form method="post">
-      {% csrf_token %}
-      {{ form.card.as_hidden }}
-      {{ form.owner.as_hidden }}
-      {{ form.trade_info.as_p }}
-      <button type="submit">이 카드 저장</button>
-  </form>
 {% else %}
   <p>발급 가능한 카드가 없습니다.</p>
 {% endif %}
+
+<!-- 카드 발급 폼 -->
+<form method="post">
+    {% csrf_token %}
+    
+    <!-- 유저 드롭다운 -->
+    <p>
+      <label for="id_owner">사용자 선택:</label><br>
+      {{ form.owner }}
+    </p>
+
+    <!-- 트레이드 정보 (선택 입력) -->
+    {{ form.trade_info.as_p }}
+
+    <button type="submit">이 카드 발급</button>
+</form>
 
 <p><a href="{% url 'draw_card' %}">다시 뽑기</a></p>
 <p><a href="{% url 'card_list' %}">카드 목록으로</a></p>
 
 <hr>
-<h3>지정 유저의 보유 카드 목록</h3>
+<h3>선택된 유저의 보유 카드 목록</h3>
 <table border="1" cellpadding="8" cellspacing="0">
   <thead>
     <tr>

@@ -151,6 +151,7 @@ def delete_grade(request, pk):
 
 def draw_card(request):
 
+    users = User.objects.all()
     card = None
     selected_user_id = None
 
