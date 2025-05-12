@@ -16,4 +16,5 @@ urlpatterns = [
     path('grades/<int:pk>/edit/', views.update_grade, name='update_grade'),
     path('grades/<int:pk>/delete/', views.delete_grade, name='delete_grade'),
     path('draw/', views.draw_card, name='draw_card'),
+    path('manage/', views.manage_cards, name='manage_cards'),
 ]

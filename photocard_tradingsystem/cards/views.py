@@ -2,11 +2,13 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from .models import Card, Category, Grade, User
+from .models import Card, Category, Grade, User, CreatedCard
 from .forms import CardForm, CategoryForm, GradeForm, DrawCardForm, CreatedCard
 import os
 from django.conf import settings
 import random
+from django.db.models import Q
+from django.contrib.auth.models import User
 
 def card_list(request):
     cards = Card.objects.all()
@@ -179,6 +181,49 @@ def draw_card(request):
         'my_cards': my_cards,
         'users': users
     })
+
+def manage_cards(request):
+    cards = CreatedCard.objects.all()   # foreignkey로 설정해놔서 다 받아와짐
+   
+    selected_grade = request.GET.get('grade')
+    selected_category = request.GET.get('category')
+    selected_owner = request.GET.get('owner')
+    selected_date = request.GET.get('date')
+    sort_option = request.GET.get('sort')
+
+    if selected_grade:
+        cards = cards.filter(card__grade__id=selected_grade)
+    if selected_category:
+        cards = cards.filter(card__category__id=selected_category)
+    if selected_owner:
+        cards = cards.filter(card__owner__id=selected_owner)
+    if selected_date:
+        cards = cards.filter(created_at__date=selected_date)
+    
+    if sort_option == 'name':
+        cards = cards.order_by('card__name')
+    elif sort_option == 'grade':
+        cards = cards.order_by('card__grade__name')
+    else:
+        cards = cards.order_by('created_at')
+
+    context = {
+        'cards': cards,
+        'grades':Grade.objects.all(),
+        'categories': Category.objects.all(),
+        'owners': User.objects.all(),
+        'selected_grade': selected_grade,
+        'selected_category': selected_category,
+        'selected_owner': selected_owner,
+        'selected_date' : selected_date,
+        'sort_option': sort_option
+    }
+    return render(request,'cards/manage.html',
+                  context
+                  )
+
+
+
 
 
 

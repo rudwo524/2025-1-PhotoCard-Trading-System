@@ -1,0 +1,68 @@
+<h2>📋 발급된 카드 관리</h2>
+
+<form method="get">
+  <label>등급:</label>
+  <select name="grade">
+    <option value="">전체</option>
+    {% for g in grades %}
+      <option value="{{ g.id }}">{{ g.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>카테고리:</label>
+  <select name="category">
+    <option value="">전체</option>
+    {% for c in categories %}
+      <option value="{{ c.id }}">{{ c.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>소유자:</label>
+  <select name="owner">
+    <option value="">전체</option>
+    {% for o in owners %}
+      <option value="{{ o.id }}">{{ o.username }}</option>
+    {% endfor %}
+  </select>
+
+  <label>발급일:</label>
+  <input type="date" name="date">
+
+  <label>정렬:</label>
+  <select name="sort">
+    <option value="recent">최신순</option>
+    <option value="name">이름순</option>
+    <option value="grade">등급순</option>
+  </select>
+
+  <button type="submit">조회</button>
+</form>
+
+<hr>
+
+<table border="1" cellpadding="8">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>카드명</th>
+      <th>등급</th>
+      <th>카테고리</th>
+      <th>소유자</th>
+      <th>발급일</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uc in cards %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ uc.card.name }}</td>
+      <td>{{ uc.card.grade }}</td>
+      <td>{{ uc.card.category }}</td>
+      <td>{{ uc.owner.username }}</td>
+      <td>{{ uc.acquired_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">조건에 맞는 카드가 없습니다.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

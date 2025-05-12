@@ -1,6 +1,6 @@
 <h2>카드 발급</h2>
 
-<!-- 카드 정보 출력 (서버에서 랜덤으로 선택된 카드) -->
+<!-- 카드 정보 출력 (서버에서 랜덤으로 선택된 카드) 
 {% if card %}
   <div style="border: 1px solid #ccc; padding: 10px; display: inline-block;">
     <img src="{{ card.image_url.url }}" alt="{{ card.name }}" width="200"><br>
@@ -12,7 +12,7 @@
 {% else %}
   <p>발급 가능한 카드가 없습니다.</p>
 {% endif %}
-
+-->
 <!-- 카드 발급 폼 -->
 <form method="post">
     {% csrf_token %}
@@ -21,6 +21,13 @@
     <p>
       <label for="id_owner">사용자 선택:</label><br>
       {{ form.owner }}
+    </p>
+
+    <!-- 카드 정보 -->
+
+    <p>
+      <label>발급된 카드:</label><br>
+      {{ form.card }}
     </p>
 
     <!-- 트레이드 정보 (선택 입력) -->
@@ -38,6 +45,7 @@
   <thead>
     <tr>
       <th>#</th>
+      <th>소유자명</th>
       <th>카드 이름</th>
       <th>등급</th>
       <th>카테고리</th>
@@ -48,6 +56,7 @@
     {% for uc in my_cards %}
       <tr>
         <td>{{ forloop.counter }}</td>
+        <td>{{ uc.owner.username }}</td>
         <td>{{ uc.card.name }}</td>
         <td>{{ uc.card.grade }}</td>
         <td>{{ uc.card.category }}</td>
