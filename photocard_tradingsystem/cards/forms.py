@@ -21,6 +21,4 @@ class DrawCardForm(forms.ModelForm):
         model = CreatedCard
         fields = ['card', 'owner', 'trade_info'] #, 'created_at', 'deleted_at']
 
-
-
 # created_at, delete_at, update_at

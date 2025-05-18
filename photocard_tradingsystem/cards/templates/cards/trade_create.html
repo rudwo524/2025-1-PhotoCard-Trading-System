@@ -1,0 +1,14 @@
+<h2>판매 등록</h2>
+<form method="post">
+  {% csrf_token %}
+  <label for="card">카드 선택:</label>
+  <select name="card_id">
+    {% for card in cards %}
+      <option value="{{ card.id }}">{{ card.card.name }}</option>
+    {% endfor %}
+  </select>
+  <br>
+  <label for="price">가격:</label>
+  <input type="number" name="price">
+  <button type="submit">등록</button>
+</form>

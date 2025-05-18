@@ -1,0 +1,12 @@
+<h2>거래 가능 카드 목록</h2>
+{% for trade in trades %}
+  <div>
+    <strong>{{ trade.created_card.card.name }}</strong> - {{ trade.price }}원
+    <form method="post" action="{% url 'trade_request' trade.id %}">
+      {% csrf_token %}
+      <button type="submit">요청하기</button>
+    </form>
+  </div>
+{% empty %}
+  거래 가능한 카드가 없습니다.
+{% endfor %}

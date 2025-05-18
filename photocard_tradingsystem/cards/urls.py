@@ -17,4 +17,9 @@ urlpatterns = [
     path('grades/<int:pk>/delete/', views.delete_grade, name='delete_grade'),
     path('draw/', views.draw_card, name='draw_card'),
     path('manage/', views.manage_cards, name='manage_cards'),
+    path('trades/', views.trade_list, name='trade_list'),
+    path('trades/sell/', views.trade_create, name='trade_create'),
+    path('trades/<int:trade_id>/request/', views.trade_request, name='trade_request'),
+    path('trades/requests/', views.trade_requests_received, name='trade_requests_received'),
+    path('trades/request/<int:req_id>/approve/', views.trade_approve, name='trade_approve'),
 ]

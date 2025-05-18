@@ -1,14 +1,15 @@
 # Create your views here.
-
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from .models import Card, Category, Grade, User, CreatedCard
+from .models import Card, Category, Grade, User, CreatedCard, Trade, TradeRequest
 from .forms import CardForm, CategoryForm, GradeForm, DrawCardForm, CreatedCard
 import os
 from django.conf import settings
 import random
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def card_list(request):
     cards = Card.objects.all()
@@ -20,7 +21,6 @@ def card_list(request):
         image_urls = []
     print(image_urls)
     return render(request, 'cards/card_list.html', {'cards': cards})
-
     
 def add_card(request):
     if request.method == 'POST':
@@ -127,7 +127,6 @@ def delete_grade(request, pk):
 #         card = None
 #     return render(request, 'cards/draw_card.html', {'card': card})
 
-
 # def draw_card(request):
 
 #     card = None
@@ -185,21 +184,37 @@ def draw_card(request):
 def manage_cards(request):
     cards = CreatedCard.objects.all()   # foreignkey로 설정해놔서 다 받아와짐
    
+    total_count = cards.count()
+
+    user_counts = cards.values('owner__username').annotate(count=Count('id')).order_by('-count')
+    grade_counts = cards.values('card__grade__name').annotate(count=Count('id')).order_by('-count')
+
     selected_grade = request.GET.get('grade')
     selected_category = request.GET.get('category')
     selected_owner = request.GET.get('owner')
     selected_date = request.GET.get('date')
     sort_option = request.GET.get('sort')
 
+    search_name = request.GET.get('search_name')
+    search_owner = request.GET.get('search_owner')
+    search_id = request.GET.get('search_id')
+
     if selected_grade:
         cards = cards.filter(card__grade__id=selected_grade)
     if selected_category:
         cards = cards.filter(card__category__id=selected_category)
     if selected_owner:
-        cards = cards.filter(card__owner__id=selected_owner)
+        cards = cards.filter(owner__id=selected_owner)
     if selected_date:
         cards = cards.filter(created_at__date=selected_date)
     
+    if search_name:
+        cards = cards.filter(card__name__icontains=search_name)
+    if search_owner:
+        cards = cards.filter(owner__username__icontains=search_owner)
+    if search_id:
+        cards = cards.filter(card__id=search_id)
+
     if sort_option == 'name':
         cards = cards.order_by('card__name')
     elif sort_option == 'grade':
@@ -216,16 +231,73 @@ def manage_cards(request):
         'selected_category': selected_category,
         'selected_owner': selected_owner,
         'selected_date' : selected_date,
-        'sort_option': sort_option
+        'search_name': search_name,
+        'search_owner': search_owner,
+        'search_id': search_id,
+        'sort_option': sort_option,
+        'total_count': total_count,
+        'user_counts': user_counts,
+        'grade_counts': grade_counts,
     }
+    
     return render(request,'cards/manage.html',
                   context
                   )
 
 
+# cards/views.py
 
 
 
+@login_required
+def trade_list(request):
+    trades = Trade.objects.filter(is_active=True).exclude(seller=request.user)
+    return render(request, 'cards/trade_list.html', {'trades': trades})
 
+@login_required
+def trade_create(request):
+    user_cards = CreatedCard.objects.filter(owner=request.user)
+    if request.method == 'POST':
+        card_id = request.POST['card_id']
+        price = int(request.POST['price'])
+        card = CreatedCard.objects.get(id=card_id)
+        Trade.objects.create(created_card=card, seller=request.user, price=price)
+        messages.success(request, '거래가 등록되었습니다.')
+        return redirect('trade_list')
+    return render(request, 'cards/trade_create.html', {'cards': user_cards})
 
-    
+@login_required
+def trade_request(request, trade_id):
+    trade = get_object_or_404(Trade, id=trade_id, is_active=True)
+    if trade.seller == request.user:
+        messages.error(request, '자신의 카드에는 요청할 수 없습니다.')
+        return redirect('trade_list')
+    TradeRequest.objects.create(trade=trade, buyer=request.user)
+    messages.success(request, '거래 요청을 보냈습니다.')
+    return redirect('trade_list')
+
+@login_required
+def trade_requests_received(request):
+    requests = TradeRequest.objects.filter(trade__seller=request.user, is_approved__isnull=True)
+    return render(request, 'cards/trade_requests_received.html', {'requests': requests})
+
+@login_required
+def trade_approve(request, req_id):
+    req = get_object_or_404(TradeRequest, id=req_id, trade__seller=request.user)
+    req.is_approved = True
+    req.save()
+
+    # 카드 소유권 이전
+    created_card = req.trade.created_card
+    created_card.owner = req.buyer
+    created_card.save()
+
+    # 거래 비활성화
+    req.trade.is_active = False
+    req.trade.save()
+
+    # 다른 요청 자동 거절
+    TradeRequest.objects.filter(trade=req.trade).exclude(id=req.id).update(is_approved=False)
+
+    messages.success(request, '거래가 완료되었습니다.')
+    return redirect('trade_requests_received')

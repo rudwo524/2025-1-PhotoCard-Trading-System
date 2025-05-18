@@ -1,0 +1,9 @@
+<h2>들어온 거래 요청</h2>
+{% for req in requests %}
+  <div>
+    {{ req.buyer.username }}님이 {{ req.trade.created_card.card.name }} 구매 요청함
+    <a href="{% url 'trade_approve' req.id %}">승인하기</a>
+  </div>
+{% empty %}
+  들어온 요청이 없습니다.
+{% endfor %}
