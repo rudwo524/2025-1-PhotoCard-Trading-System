@@ -22,4 +22,7 @@ urlpatterns = [
     path('trades/<int:trade_id>/request/', views.trade_request, name='trade_request'),
     path('trades/requests/', views.trade_requests_received, name='trade_requests_received'),
     path('trades/request/<int:req_id>/approve/', views.trade_approve, name='trade_approve'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+     path('signup/', views.signup_view, name='signup'),
 ]

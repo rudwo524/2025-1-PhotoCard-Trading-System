@@ -1,8 +1,9 @@
 from django.db import models
 # Create your models here.
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
-User = get_user_model()
+#User = get_user_model()
 
 # # 카드 기본 정보 (카드 마스터 데이터)
 # class CardMaster(models.Model):
@@ -35,24 +36,44 @@ User = get_user_model()
 #         return f"{self.card_instance.card.name} | {self.seller.username} ➝ {self.buyer.username} | ₩{self.price}"
 # image = models.ImageField(upload_to='cards/')
 
-# 사용자 (간단한 커스텀 유저)
-class User(models.Model):
-    username = models.CharField(max_length=50, unique=True)  # user-id 역할
-    name = models.CharField(max_length=50)
-    password = models.CharField(max_length=128)
-    role = models.CharField(max_length=20, default='user')
-    def __str__(self):
-        return self.username
+# class UserManager(BaseUserManager):
+#     def create_user(self, username, password=None, **extra_fields):
+#         if not username:
+#             raise ValueError("Username is required")
+#         user = self.model(username=username, **extra_fields)
+#         user.set_password(password)  # 비밀번호 해시 저장
+#         user.save(using=self._db)
+#         return user
 
-# 카드 정보 (기본 정보)
-class Card(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    description = models.TextField()
-    image_url = models.ImageField(upload_to='card_images/')
-    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
-    def __str__(self):
-        return self.name
+#     def create_superuser(self, username, password=None, **extra_fields):
+#         extra_fields.setdefault('role', 'admin')
+#         user = self.create_user(username, password, **extra_fields)
+#         user.is_staff = True
+#         user.is_superuser = True
+#         user.save(using=self._db)
+#         return user
+
+# class User(AbstractBaseUser, PermissionsMixin):
+#     username = models.CharField(max_length=50, unique=True)
+#     name = models.CharField(max_length=50)
+#     role = models.CharField(max_length=20, default='user')
+
+#     is_active = models.BooleanField(default=True)
+#     is_staff = models.BooleanField(default=False)
+
+#     objects = UserManager()
+
+#     USERNAME_FIELD = 'username'
+#     REQUIRED_FIELDS = ['name']
+
+#     def __str__(self):
+#         return self.username
+    
+#     def has_perm(self, perm, obj=None):
+#         return self.is_superuser
+
+#     def has_module_perms(self, app_label):
+#         return self.is_superuser
 
 # 등급 (레어도)
 class Grade(models.Model):
@@ -67,6 +88,25 @@ class Category(models.Model):
     Year = models.CharField(max_length=4)
     def __str__(self):
         return self.name
+
+# 카드 정보 (기본 정보)
+class Card(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    description = models.TextField()
+    image_url = models.ImageField(upload_to='card_images/')
+    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
+    def __str__(self):
+        return self.name
+
+# 사용자 (간단한 커스텀 유저)
+class User(models.Model):
+    username = models.CharField(max_length=50, unique=True)  # user-id 역할
+    name = models.CharField(max_length=50)
+    password = models.CharField(max_length=128)
+    role = models.CharField(max_length=20, default='user')
+    def __str__(self):
+        return self.username
 
 # 생성된 카드 (유저가 보유한 개별 카드 단위)
 class CreatedCard(models.Model):
@@ -89,6 +129,7 @@ class CreatedCard(models.Model):
 #         card_name = self.created_card.card.name if self.created_card and self.created_card.card else "카드 없음"
 #         return f"{card_name} 거래 - {self.price}원"
 # image = models.ImageField(upload_to='cards/')
+
 
 # cards/models.py
 
