@@ -35,6 +35,25 @@ User = get_user_model()
 #         return f"{self.card_instance.card.name} | {self.seller.username} ➝ {self.buyer.username} | ₩{self.price}"
 # image = models.ImageField(upload_to='cards/')
 
+# 사용자 (간단한 커스텀 유저)
+class User(models.Model):
+    username = models.CharField(max_length=50, unique=True)  # user-id 역할
+    name = models.CharField(max_length=50)
+    password = models.CharField(max_length=128)
+    role = models.CharField(max_length=20, default='user')
+    def __str__(self):
+        return self.username
+
+# 카드 정보 (기본 정보)
+class Card(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    description = models.TextField()
+    image_url = models.ImageField(upload_to='card_images/')
+    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
+    def __str__(self):
+        return self.name
+
 # 등급 (레어도)
 class Grade(models.Model):
     name = models.CharField(max_length=50)
@@ -48,25 +67,6 @@ class Category(models.Model):
     Year = models.CharField(max_length=4)
     def __str__(self):
         return self.name
-
-# 카드 정보 (기본 정보)
-class Card(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    description = models.TextField()
-    image_url = models.ImageField(upload_to='card_images/')
-    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
-    def __str__(self):
-        return self.name
-
-# 사용자 (간단한 커스텀 유저)
-class User(models.Model):
-    username = models.CharField(max_length=50, unique=True)  # user-id 역할
-    name = models.CharField(max_length=50)
-    password = models.CharField(max_length=128)
-    role = models.CharField(max_length=20, default='user')
-    def __str__(self):
-        return self.username
 
 # 생성된 카드 (유저가 보유한 개별 카드 단위)
 class CreatedCard(models.Model):
@@ -89,7 +89,6 @@ class CreatedCard(models.Model):
 #         card_name = self.created_card.card.name if self.created_card and self.created_card.card else "카드 없음"
 #         return f"{card_name} 거래 - {self.price}원"
 # image = models.ImageField(upload_to='cards/')
-
 
 # cards/models.py
 

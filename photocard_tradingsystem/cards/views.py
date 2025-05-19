@@ -158,6 +158,9 @@ def draw_card(request):
 
     if request.method == 'POST':
         form = DrawCardForm(request.POST)
+        # if form.created_at == None: # 카드 생성 시간 추가가
+        #     import time
+        #     form.created_at = time.time()
         if form.is_valid():
             form.save()
             return redirect('draw_card')
@@ -244,10 +247,7 @@ def manage_cards(request):
                   context
                   )
 
-
 # cards/views.py
-
-
 
 @login_required
 def trade_list(request):
