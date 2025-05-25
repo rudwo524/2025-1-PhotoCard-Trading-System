@@ -340,3 +340,6 @@ def signup_view(request):
         return redirect('login')
 
     return render(request, 'cards/signup.html')
+
+def trading(request):
+    return render(request, 'cards/trading.html')
