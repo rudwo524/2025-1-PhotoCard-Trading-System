@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path("cards/", include('cards.urls')), # 앱의 urls
     # path("trade/", include('trade.urls')),
-    path('admin/', admin.site.urls),  
+    path('admin/', admin.site.urls),
+    # path('', TemplateView.as_view(template_name='main_home.html'), name='home'),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
