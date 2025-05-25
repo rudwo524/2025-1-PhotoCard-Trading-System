@@ -19,10 +19,12 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
+from . import views
 
 urlpatterns = [
     path("cards/", include('cards.urls')), # 앱의 urls
     # path("trade/", include('trade.urls')),
     path('admin/', admin.site.urls),
+    path('', views.main_page, name='main_page'),
     # path('', TemplateView.as_view(template_name='main_home.html'), name='home'),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

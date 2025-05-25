@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+
+        a {
+            flex: 1;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .left, .right {
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            transition: background-color 0.3s;
+        }
+
+        .left {
+            background-color: #f0f0f0;
+        }
+
+        .left:hover {
+            background-color: #d0e0ff;
+        }
+
+        .right {
+            background-color: #f8f8f8;
+        }
+
+        .right:hover {
+            background-color: #ffd0d0;
+        }
+
+        .icon {
+            height: 50vh; /* 전체 화면의 50% 높이 */
+            max-width: 80%; /* 너비는 너무 커지지 않도록 제한 */
+            object-fit: contain;
+        }
+
+        .label {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="/cards/">
+        <div class="left">
+            <img src="/media/background/card.png" alt="Card Icon" class="icon">
+            <div class="label">Go to Cards</div>
+        </div>
+    </a>
+    <a href="/cards/trade/">
+        <div class="right">
+            <img src="/media/background/trade.png" alt="Trade Icon" class="icon">
+            <div class="label">Go to Trade</div>
+        </div>
+    </a>
+</body>
+</html>
