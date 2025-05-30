@@ -330,7 +330,7 @@
 </body>
 </html> -->
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -634,5 +634,1100 @@ function prevPage() {
 window.onload = () => renderCards();
 </script>
   </div>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>카드 트레이딩 시스템</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      width: 100%;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #2c3e50;
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ecf0f1;
+      z-index: 10;
+    }
+    .sidebar {
+      flex: 0 0 20%;
+      background-color: #d6eaf8;
+      padding: 20px;
+      margin-top: 80px;
+      height: 100vh;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .content {
+      flex: 1;
+      padding: 100px 20px 40px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .search-box input, .search-box select {
+      padding: 8px;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    .card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+      justify-content: center;
+    }
+    .card-item {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .card-item:hover {
+      transform: scale(1.02);
+    }
+    .card-item[data-grade="S"] { border-left: 5px solid #e74c3c; }
+    .card-item[data-grade="A"] { border-left: 5px solid #f39c12; }
+    .card-item[data-grade="B"] { border-left: 5px solid #3498db; }
+    .card-item[data-grade="C"] { border-left: 5px solid #2ecc71; }
+    .card-item img {
+  width: auto;
+  height: auto;
+  max-height: 140px;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+    .card-info {
+      padding: 10px;
+    }
+    .card-info h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+    .card-info p {
+      font-size: 13px;
+      color: #566573;
+      margin: 3px 0;
+    }
+    .trade-button {
+      margin-top: 5px;
+      padding: 6px 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .trade-button:hover {
+      background-color: #2980b9;
+    }
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 100;
+      max-width: 300px;
+    }
+    #popup h3 { margin-top: 0; }
+    #popup-close {
+      float: right;
+      cursor: pointer;
+      color: red;
+    }
+  </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="display: flex; width: 100%; height: 100vh; overflow: hidden;">
+  <header>카드 트레이딩 시스템</header>
+  <div class="sidebar">
+    <h3>카드 정보</h3>
+    <p>카드는 랜덤으로 발급되며, 등급에 따라 희귀도가 다릅니다.</p>
+    <h3>거래 규칙</h3>
+    <p>중복 카드는 자유롭게 거래 등록이 가능하며, 거래 요청은 1회에 한해 가능합니다.</p>
+    <h3>관리자 안내</h3>
+    <p>관리자는 카드 등록, 삭제 및 사용자 보유 현황을 확인할 수 있습니다.</p>
+  </div>
+  <div class="content">
+    <div class="search-box">
+  <input type="text" id="search" onkeyup="filterCards()" placeholder="카드 이름 검색" />
+  <select id="grade-filter" onchange="filterCards()">
+    <option value="">전체 등급</option>
+    <option value="S">S</option>
+    <option value="A">A</option>
+    <option value="B">B</option>
+    <option value="C">C</option>
+  </select>
+  <select id="category-filter" onchange="filterCards()">
+    <option value="">전체 카테고리</option>
+    <option value="건물">건물</option>
+    <option value="이벤트">이벤트</option>
+    <option value="동아리">동아리</option>
+    <option value="음식">음식</option>
+  </select>
+  <select id="sort-filter" onchange="filterCards()">
+    <option value="">정렬 선택</option>
+    <option value="price-asc">가격 낮은 순</option>
+    <option value="price-desc">가격 높은 순</option>
+  </select>
+</div>
+<div class="card-list" id="card-list"></div>
+<div style="text-align: center; margin-top: 20px;">
+  <button onclick="prevPage()">이전</button>
+  <span id="page-indicator">1</span>
+  <button onclick="nextPage()">다음</button>
+  <button onclick="toggleFavoritesView()" id="favToggle">즐겨찾기만 보기</button>
+</div>
+<div id="popup"></div>
+<script>
+const cardData = [];
+const favoriteSet = new Set();
+const grades = ['S', 'A', 'B', 'C'];
+const categories = ['건물', '이벤트', '동아리', '음식'];
+for (let i = 1; i <= 50; i++) {
+  cardData.push({
+    id: i,
+    title: `카드 ${i}`,
+    grade: grades[i % 4],
+    category: categories[i % 4],
+    price: (i * 500) % 3500 + 500,
+    history: Array.from({length: 7}, (_, d) => Math.floor(((i * 500 + d * 300) % 3000) + 500))
+  });
+}
+let currentPage = 1;
+const perPage = 12;
+let showOnlyFavorites = false;
+let chart;
+function toggleFavorite(id) {
+  if (favoriteSet.has(id)) favoriteSet.delete(id);
+  else favoriteSet.add(id);
+  renderCards();
+}
+function toggleFavoritesView() {
+  showOnlyFavorites = !showOnlyFavorites;
+  document.getElementById("favToggle").textContent = showOnlyFavorites ? "전체 보기" : "즐겨찾기만 보기";
+  currentPage = 1;
+  renderCards();
+}
+function renderCards() {
+  const cardList = document.getElementById('card-list');
+  cardList.innerHTML = '';
+  const query = document.getElementById('search')?.value.toLowerCase() || "";
+  const grade = document.getElementById('grade-filter')?.value || "";
+  const category = document.getElementById('category-filter')?.value || "";
+  const sortBy = document.getElementById('sort-filter')?.value || "";
+  let filtered = cardData.filter(c => {
+    const match = c.title.toLowerCase().includes(query) &&
+                  (!grade || c.grade === grade) &&
+                  (!category || c.category === category);
+    const favMatch = !showOnlyFavorites || favoriteSet.has(c.id);
+    return match && favMatch;
+  });
+  filtered.sort((a, b) => {
+    const aFav = favoriteSet.has(a.id);
+    const bFav = favoriteSet.has(b.id);
+    if (aFav === bFav) return 0;
+    return aFav ? -1 : 1;
+  });
+  if (sortBy === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+  if (sortBy === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+  const total = filtered.length;
+  const maxPage = Math.ceil(total / perPage) || 1;
+  currentPage = Math.min(currentPage, maxPage);
+  const start = (currentPage - 1) * perPage;
+  const end = start + perPage;
+  const pageData = filtered.slice(start, end);
+  pageData.forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'card-item';
+    div.setAttribute('data-grade', card.grade);
+    div.setAttribute('data-category', card.category);
+    div.onclick = () => showPopup(card);
+    const isFav = favoriteSet.has(card.id);
+    div.innerHTML = `
+      <img src="https://via.placeholder.com/220x140.png?text=${card.title}" alt="${card.title}">
+      <div class="card-info">
+        <h3>${card.title}</h3>
+        <p>등급: ${card.grade}</p>
+        <p>카테고리: ${card.category}</p>
+        <p>가격: ${card.price}원</p>
+        <button class="trade-button" onclick="event.stopPropagation(); alert('구매 요청 전송');">구매 요청</button>
+        <button class="trade-button" onclick="event.stopPropagation(); toggleFavorite(${card.id});">
+          ${isFav ? '★ 즐겨찾기 해제' : '☆ 즐겨찾기 추가'}
+        </button>
+      </div>
+    `;
+    cardList.appendChild(div);
+  });
+  document.getElementById('page-indicator').innerText = `${currentPage} / ${maxPage}`;
+}
+function showPopup(card) {
+  const popup = document.getElementById('popup');
+  popup.innerHTML = `<span id="popup-close" onclick="hidePopup()">&times;</span>
+    <h3>${card.title}</h3>
+    <p>등급: ${card.grade}</p>
+    <p>카테고리: ${card.category}</p>
+    <p>가격: ${card.price}원</p>
+    <canvas id="chart" width="300" height="200"></canvas>
+    <button class='trade-button' onclick='alert("구매 요청이 전송되었습니다.")'>구매 요청</button>`;
+  popup.style.display = 'block';
+  setTimeout(() => renderChart(card), 10);
+}
+function renderChart(card) {
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['7일 전', '6일 전', '5일 전', '4일 전', '3일 전', '2일 전', '1일 전'],
+      datasets: [{
+        label: '가격 추이',
+        data: card.history,
+        borderColor: '#3498db',
+        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: false } }
+    }
+  });
+}
+function hidePopup() {
+  document.getElementById('popup').style.display = 'none';
+}
+function filterCards() {
+  currentPage = 1;
+  renderCards();
+}
+function nextPage() {
+  currentPage++;
+  renderCards();
+}
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderCards();
+  }
+}
+window.onload = () => renderCards();
+</script>
+  </div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>카드 트레이딩 시스템</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background-color: #2c3e50;
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ecf0f1;
+    }
+    .main-section {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .card-list-container {
+      flex: 6;
+      padding: 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    .card-detail-container {
+      flex: 4;
+      padding: 20px;
+      background-color: #ffffff;
+      box-sizing: border-box;
+      border-left: 1px solid #ccc;
+      overflow-y: auto;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+    .search-box input, .search-box select {
+      padding: 6px 10px;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    .card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      justify-content: center;
+    }
+    .card-item {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+      cursor: pointer;
+      text-align: center;
+      padding: 10px;
+    }
+    .card-item:hover {
+      transform: scale(1.02);
+    }
+    .card-item img {
+      width: auto;
+      height: auto;
+      max-height: 140px;
+      max-width: 100%;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 10px;
+    }
+    .card-info h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+    .card-info p {
+      font-size: 13px;
+      color: #566573;
+      margin: 3px 0;
+    }
+    .trade-button {
+      margin-top: 5px;
+      padding: 6px 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .trade-button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>카드 트레이딩 시스템</header>
+  <div class="main-section">
+    <div class="card-list-container">
+      <div class="search-box">
+        <input type="text" id="search" onkeyup="filterCards()" placeholder="카드 이름 검색" />
+        <select id="grade-filter" onchange="filterCards()">
+          <option value="">전체 등급</option>
+          <option value="S">S</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </select>
+        <select id="category-filter" onchange="filterCards()">
+          <option value="">전체 카테고리</option>
+          <option value="건물">건물</option>
+          <option value="이벤트">이벤트</option>
+          <option value="동아리">동아리</option>
+          <option value="음식">음식</option>
+        </select>
+        <select id="sort-filter" onchange="filterCards()">
+          <option value="">정렬 선택</option>
+          <option value="price-asc">가격 낮은 순</option>
+          <option value="price-desc">가격 높은 순</option>
+        </select>
+      </div>
+      <div class="card-list" id="card-list"></div>
+      <div style="text-align: center; margin-top: 20px;">
+        <button onclick="prevPage()">이전</button>
+        <span id="page-indicator">1</span>
+        <button onclick="nextPage()">다음</button>
+        <button onclick="toggleFavoritesView()" id="favToggle">즐겨찾기만 보기</button>
+      </div>
+    </div>
+    <div class="card-detail-container" id="card-detail">
+      <h3>카드 상세 정보</h3>
+      <p>카드를 클릭하면 오른쪽에 상세 정보가 나타납니다.</p>
+    </div>
+  </div>
+  <script>
+    const cardData = [];
+    const favoriteSet = new Set();
+    
+  cardData.push({
+    id: 1,
+    title: "팔달관",
+    grade: "A",
+    category: "건물",
+    price: 800,
+    description: "아주대학교의 상징적인 강의동 중 하나로, 소프트웨어학과, 수학과 등등이 사용하는 건물입니다.",
+    image: "/media/card_images/팔달관.webp",
+    history: [500, 800, 1100, 1400, 1700, 2000, 800]
+  });
+  cardData.push({
+    id: 2,
+    title: "AFC",
+    grade: "S",
+    category: "동아리",
+    price: 1100,
+    description: "아주대학교 중앙 축구 동아리입니다",
+    image: "/media/card_images/afc.png",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 1100]
+  });
+  cardData.push({
+    id: 3,
+    title: "중앙도서관",
+    grade: "C",
+    category: "건물",
+    price: 1400,
+    description: "24시간 개방되는 아주대의 학습 중심 공간입니다.",
+    image: "/media/card_images/중앙도서관.bmp",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 1400]
+  });
+  cardData.push({
+    id: 4,
+    title: "인공지능",
+    grade: "S",
+    category: "과목",
+    price: 1700,
+    description: "소프트웨어학과에 개설되어있는 인공지능 과목입니다.",
+    image: "/media/card_images/ai.jpg",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 1700]
+  });
+  cardData.push({
+    id: 5,
+    title: "기계학습",
+    grade: "S",
+    category: "과목",
+    price: 2000,
+    description: "신입생을 위한 다양한 동아리 소개의 장입니다.",
+    image: "/media/card_images/machine_learning.jpg",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 2000]
+  });
+  cardData.push({
+    id: 6,
+    title: "컴퓨터비젼",
+    grade: "C",
+    category: "과목",
+    price: 2300,
+    description: "IT 기반 창업에 관심 있는 학생들의 모임입니다.",
+    image: "/media/card_images/computer_vision.jpg",
+    history: [3000, 3300, 600, 900, 1200, 1500, 2300]
+  });
+  cardData.push({
+    id: 7,
+    title: "데이터마이닝",
+    grade: "B",
+    category: "과목",
+    price: 2600,
+    description: "기계공학 관련 프로젝트를 진행하는 동아리입니다.",
+    image: "/media/card_images/data_mining.png",
+    history: [500, 800, 1100, 1400, 1700, 2000, 2600]
+  });
+  cardData.push({
+    id: 8,
+    title: "홍재관",
+    grade: "B",
+    category: "건물",
+    price: 2900,
+    description: "학생들이 가장 좋아하는 인기 메뉴입니다.",
+    image: "/media/card_images/홍재관.jpg",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 2900]
+  });
+  cardData.push({
+    id: 9,
+    title: "인마상",
+    grade: "A",
+    category: "건물",
+    price: 3200,
+    description: "바삭한 식감이 매력적인 저렴한 학식 메뉴입니다.",
+    image: "/media/card_images/horse.jpg",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 3200]
+  });
+  cardData.push({
+    id: 10,
+    title: "중앙광장",
+    grade: "A",
+    category: "건물",
+    price: 3500,
+    description: "학생들이 자주 모이는 소통과 휴식의 공간입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=중앙광장",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 3500]
+  });
+    
+  cardData.push({
+    id: 11,
+    title: "카드 11",
+    grade: "C",
+    category: "음식",
+    price: 2500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드11",
+    history: [3000, 3300, 600, 900, 1200, 1500, 2500]
+  });
+  cardData.push({
+    id: 12,
+    title: "카드 12",
+    grade: "S",
+    category: "건물",
+    price: 3000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드12",
+    history: [500, 800, 1100, 1400, 1700, 2000, 3000]
+  });
+  cardData.push({
+    id: 13,
+    title: "카드 13",
+    grade: "A",
+    category: "이벤트",
+    price: 3500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드13",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 3500]
+  });
+  cardData.push({
+    id: 14,
+    title: "카드 14",
+    grade: "B",
+    category: "동아리",
+    price: 500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드14",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 500]
+  });
+  cardData.push({
+    id: 15,
+    title: "카드 15",
+    grade: "C",
+    category: "음식",
+    price: 1000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드15",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 1000]
+  });
+  cardData.push({
+    id: 16,
+    title: "카드 16",
+    grade: "S",
+    category: "건물",
+    price: 1500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드16",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 1500]
+  });
+  cardData.push({
+    id: 17,
+    title: "카드 17",
+    grade: "A",
+    category: "이벤트",
+    price: 2000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드17",
+    history: [3000, 3300, 600, 900, 1200, 1500, 2000]
+  });
+  cardData.push({
+    id: 18,
+    title: "카드 18",
+    grade: "B",
+    category: "동아리",
+    price: 2500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드18",
+    history: [500, 800, 1100, 1400, 1700, 2000, 2500]
+  });
+  cardData.push({
+    id: 19,
+    title: "카드 19",
+    grade: "C",
+    category: "음식",
+    price: 3000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드19",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 3000]
+  });
+  cardData.push({
+    id: 20,
+    title: "카드 20",
+    grade: "S",
+    category: "건물",
+    price: 3500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드20",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 3500]
+  });
+  cardData.push({
+    id: 21,
+    title: "카드 21",
+    grade: "A",
+    category: "이벤트",
+    price: 500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드21",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 500]
+  });
+  cardData.push({
+    id: 22,
+    title: "카드 22",
+    grade: "B",
+    category: "동아리",
+    price: 1000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드22",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 1000]
+  });
+  cardData.push({
+    id: 23,
+    title: "카드 23",
+    grade: "C",
+    category: "음식",
+    price: 1500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드23",
+    history: [3000, 3300, 600, 900, 1200, 1500, 1500]
+  });
+  cardData.push({
+    id: 24,
+    title: "카드 24",
+    grade: "S",
+    category: "건물",
+    price: 2000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드24",
+    history: [500, 800, 1100, 1400, 1700, 2000, 2000]
+  });
+  cardData.push({
+    id: 25,
+    title: "카드 25",
+    grade: "A",
+    category: "이벤트",
+    price: 2500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드25",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 2500]
+  });
+  cardData.push({
+    id: 26,
+    title: "카드 26",
+    grade: "B",
+    category: "동아리",
+    price: 3000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드26",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 3000]
+  });
+  cardData.push({
+    id: 27,
+    title: "카드 27",
+    grade: "C",
+    category: "음식",
+    price: 3500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드27",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 3500]
+  });
+  cardData.push({
+    id: 28,
+    title: "카드 28",
+    grade: "S",
+    category: "건물",
+    price: 500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드28",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 500]
+  });
+  cardData.push({
+    id: 29,
+    title: "카드 29",
+    grade: "A",
+    category: "이벤트",
+    price: 1000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드29",
+    history: [3000, 3300, 600, 900, 1200, 1500, 1000]
+  });
+  cardData.push({
+    id: 30,
+    title: "카드 30",
+    grade: "B",
+    category: "동아리",
+    price: 1500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드30",
+    history: [500, 800, 1100, 1400, 1700, 2000, 1500]
+  });
+  cardData.push({
+    id: 31,
+    title: "카드 31",
+    grade: "C",
+    category: "음식",
+    price: 2000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드31",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 2000]
+  });
+  cardData.push({
+    id: 32,
+    title: "카드 32",
+    grade: "S",
+    category: "건물",
+    price: 2500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드32",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 2500]
+  });
+  cardData.push({
+    id: 33,
+    title: "카드 33",
+    grade: "A",
+    category: "이벤트",
+    price: 3000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드33",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 3000]
+  });
+  cardData.push({
+    id: 34,
+    title: "카드 34",
+    grade: "B",
+    category: "동아리",
+    price: 3500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드34",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 3500]
+  });
+  cardData.push({
+    id: 35,
+    title: "카드 35",
+    grade: "C",
+    category: "음식",
+    price: 500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드35",
+    history: [3000, 3300, 600, 900, 1200, 1500, 500]
+  });
+  cardData.push({
+    id: 36,
+    title: "카드 36",
+    grade: "S",
+    category: "건물",
+    price: 1000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드36",
+    history: [500, 800, 1100, 1400, 1700, 2000, 1000]
+  });
+  cardData.push({
+    id: 37,
+    title: "카드 37",
+    grade: "A",
+    category: "이벤트",
+    price: 1500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드37",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 1500]
+  });
+  cardData.push({
+    id: 38,
+    title: "카드 38",
+    grade: "B",
+    category: "동아리",
+    price: 2000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드38",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 2000]
+  });
+  cardData.push({
+    id: 39,
+    title: "카드 39",
+    grade: "C",
+    category: "음식",
+    price: 2500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드39",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 2500]
+  });
+  cardData.push({
+    id: 40,
+    title: "카드 40",
+    grade: "S",
+    category: "건물",
+    price: 3000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드40",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 3000]
+  });
+  cardData.push({
+    id: 41,
+    title: "카드 41",
+    grade: "A",
+    category: "이벤트",
+    price: 3500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드41",
+    history: [3000, 3300, 600, 900, 1200, 1500, 3500]
+  });
+  cardData.push({
+    id: 42,
+    title: "카드 42",
+    grade: "B",
+    category: "동아리",
+    price: 500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드42",
+    history: [500, 800, 1100, 1400, 1700, 2000, 500]
+  });
+  cardData.push({
+    id: 43,
+    title: "카드 43",
+    grade: "C",
+    category: "음식",
+    price: 1000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드43",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 1000]
+  });
+  cardData.push({
+    id: 44,
+    title: "카드 44",
+    grade: "S",
+    category: "건물",
+    price: 1500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드44",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 1500]
+  });
+  cardData.push({
+    id: 45,
+    title: "카드 45",
+    grade: "A",
+    category: "이벤트",
+    price: 2000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드45",
+    history: [2000, 2300, 2600, 2900, 3200, 500, 2000]
+  });
+  cardData.push({
+    id: 46,
+    title: "카드 46",
+    grade: "B",
+    category: "동아리",
+    price: 2500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드46",
+    history: [2500, 2800, 3100, 3400, 700, 1000, 2500]
+  });
+  cardData.push({
+    id: 47,
+    title: "카드 47",
+    grade: "C",
+    category: "음식",
+    price: 3000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드47",
+    history: [3000, 3300, 600, 900, 1200, 1500, 3000]
+  });
+  cardData.push({
+    id: 48,
+    title: "카드 48",
+    grade: "S",
+    category: "건물",
+    price: 3500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드48",
+    history: [500, 800, 1100, 1400, 1700, 2000, 3500]
+  });
+  cardData.push({
+    id: 49,
+    title: "카드 49",
+    grade: "A",
+    category: "이벤트",
+    price: 500,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드49",
+    history: [1000, 1300, 1600, 1900, 2200, 2500, 500]
+  });
+  cardData.push({
+    id: 50,
+    title: "카드 50",
+    grade: "B",
+    category: "동아리",
+    price: 1000,
+    description: "기본 카드 설명입니다.",
+    image: "https://via.placeholder.com/220x140.png?text=카드50",
+    history: [1500, 1800, 2100, 2400, 2700, 3000, 1000]
+  });
+
+    let currentPage = 1;
+    const perPage = 12;
+    let showOnlyFavorites = false;
+    let chart;
+
+    function toggleFavoritesView() {
+      showOnlyFavorites = !showOnlyFavorites;
+      document.getElementById("favToggle").textContent = showOnlyFavorites ? "전체 보기" : "즐겨찾기만 보기";
+      currentPage = 1;
+      renderCards();
+    }
+
+    function toggleFavorite(id) {
+      if (favoriteSet.has(id)) favoriteSet.delete(id);
+      else favoriteSet.add(id);
+      renderCards();
+    }
+
+    function renderCards() {
+      const cardList = document.getElementById('card-list');
+      cardList.innerHTML = '';
+      const query = document.getElementById('search')?.value.toLowerCase() || "";
+      const grade = document.getElementById('grade-filter')?.value || "";
+      const category = document.getElementById('category-filter')?.value || "";
+      const sortBy = document.getElementById('sort-filter')?.value || "";
+      let filtered = cardData.filter(c => {
+        const match = c.title.toLowerCase().includes(query) &&
+                      (!grade || c.grade === grade) &&
+                      (!category || c.category === category);
+        const favMatch = !showOnlyFavorites || favoriteSet.has(c.id);
+        return match && favMatch;
+      });
+      filtered.sort((a, b) => {
+        const aFav = favoriteSet.has(a.id);
+        const bFav = favoriteSet.has(b.id);
+        if (aFav === bFav) return 0;
+        return aFav ? -1 : 1;
+      });
+      if (sortBy === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+      const total = filtered.length;
+      const maxPage = Math.ceil(total / perPage) || 1;
+      currentPage = Math.min(currentPage, maxPage);
+      const start = (currentPage - 1) * perPage;
+      const end = start + perPage;
+      const pageData = filtered.slice(start, end);
+      pageData.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'card-item';
+        div.setAttribute('data-grade', card.grade);
+        div.setAttribute('data-category', card.category);
+        div.onclick = () => showCardDetail(card);
+        const isFav = favoriteSet.has(card.id);
+        div.innerHTML = `
+          <img src="${card.image}" alt="${card.title}">
+          <div class="card-info">
+            <h3>${card.title}</h3>
+            <p>등급: ${card.grade}</p>
+            <p>카테고리: ${card.category}</p>
+            <p>가격: ${card.price}원</p>
+            <button class="trade-button" onclick="event.stopPropagation(); alert('구매 요청 전송');">구매</button>
+            <button class="trade-button" onclick="event.stopPropagation(); toggleFavorite(${card.id});">
+              ${isFav ? '★ 즐겨찾기 해제' : '☆ 즐겨찾기 추가'}
+            </button>
+          </div>
+        `;
+        cardList.appendChild(div);
+      });
+      document.getElementById('page-indicator').innerText = `${currentPage} / ${maxPage}`;
+    }
+
+    function showCardDetail(card) {
+      const detail = document.getElementById("card-detail");
+      detail.innerHTML = `
+        <h3>${card.title} 상세 정보</h3>
+        <p>등급: ${card.grade}</p>
+        <p>카테고리: ${card.category}</p>
+        <p>가격: ${card.price}원</p>
+        <p>설명: ${card.description}</p>
+        <img src="${card.image}" style="width: 220px; height: 120px; object-fit: contain; display: block; margin: 10px;">
+        <canvas id="chart" width="300" height="200"></canvas>
+        <button class='trade-button' onclick='alert("구매 요청이 전송되었습니다.")'>구매</button>
+      `;
+      setTimeout(() => renderChart(card), 10);
+    }
+
+    function renderChart(card) {
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['7일 전', '6일 전', '5일 전', '4일 전', '3일 전', '2일 전', '1일 전'],
+      datasets: [{
+        label: '가격 추이',
+        data: card.history,
+        borderColor: '#3498db',
+        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: false, // 🔥 이거 껐다!
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: false } }
+    }
+  });
+}
+    function filterCards() {
+      currentPage = 1;
+      renderCards();
+    }
+
+    function nextPage() {
+      currentPage++;
+      renderCards();
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderCards();
+      }
+    }
+
+    window.onload = () => renderCards();
+  </script>
 </body>
 </html>

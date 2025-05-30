@@ -1,5 +1,6 @@
 from django import forms 
 from .models import Card, Category, Grade, CreatedCard
+from django.contrib.auth.forms import AuthenticationForm
 
 class CardForm(forms.ModelForm): 
     class Meta: 
@@ -21,4 +22,7 @@ class DrawCardForm(forms.ModelForm):
         model = CreatedCard
         fields = ['card', 'owner', 'trade_info'] #, 'created_at', 'deleted_at']
 
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(label='Username')
+    password = forms.CharField(widget=forms.PasswordInput)
 # created_at, delete_at, update_at

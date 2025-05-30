@@ -36,44 +36,44 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 #         return f"{self.card_instance.card.name} | {self.seller.username} ➝ {self.buyer.username} | ₩{self.price}"
 # image = models.ImageField(upload_to='cards/')
 
-# class UserManager(BaseUserManager):
-#     def create_user(self, username, password=None, **extra_fields):
-#         if not username:
-#             raise ValueError("Username is required")
-#         user = self.model(username=username, **extra_fields)
-#         user.set_password(password)  # 비밀번호 해시 저장
-#         user.save(using=self._db)
-#         return user
+class UserManager(BaseUserManager):
+    def create_user(self, username, password=None, **extra_fields):
+        if not username:
+            raise ValueError("Username is required")
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)  # 비밀번호 해시 저장
+        user.save(using=self._db)
+        return user
 
-#     def create_superuser(self, username, password=None, **extra_fields):
-#         extra_fields.setdefault('role', 'admin')
-#         user = self.create_user(username, password, **extra_fields)
-#         user.is_staff = True
-#         user.is_superuser = True
-#         user.save(using=self._db)
-#         return user
+    def create_superuser(self, username, password=None, **extra_fields):
+        extra_fields.setdefault('role', 'admin')
+        user = self.create_user(username, password, **extra_fields)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
-# class User(AbstractBaseUser, PermissionsMixin):
-#     username = models.CharField(max_length=50, unique=True)
-#     name = models.CharField(max_length=50)
-#     role = models.CharField(max_length=20, default='user')
+class User(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
+    role = models.CharField(max_length=20, default='user')
 
-#     is_active = models.BooleanField(default=True)
-#     is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
-#     objects = UserManager()
+    objects = UserManager()
 
-#     USERNAME_FIELD = 'username'
-#     REQUIRED_FIELDS = ['name']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['name']
 
-#     def __str__(self):
-#         return self.username
+    def __str__(self):
+        return self.username
     
-#     def has_perm(self, perm, obj=None):
-#         return self.is_superuser
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
 
-#     def has_module_perms(self, app_label):
-#         return self.is_superuser
+    def has_module_perms(self, app_label):
+        return self.is_superuser
 
 # 등급 (레어도)
 class Grade(models.Model):
@@ -100,13 +100,13 @@ class Card(models.Model):
         return self.name
 
 # 사용자 (간단한 커스텀 유저)
-class User(models.Model):
-    username = models.CharField(max_length=50, unique=True)  # user-id 역할
-    name = models.CharField(max_length=50)
-    password = models.CharField(max_length=128)
-    role = models.CharField(max_length=20, default='user')
-    def __str__(self):
-        return self.username
+# class User(models.Model):
+#     username = models.CharField(max_length=50, unique=True)  # user-id 역할
+#     name = models.CharField(max_length=50)
+#     password = models.CharField(max_length=128)
+#     role = models.CharField(max_length=20, default='user')
+#     def __str__(self):
+#         return self.username
 
 # 생성된 카드 (유저가 보유한 개별 카드 단위)
 class CreatedCard(models.Model):
