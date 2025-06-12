@@ -1,0 +1,16 @@
+{% block content %}
+<h2>내 카드 뽑기</h2>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">랜덤 카드 뽑기</button>
+</form>
+
+<h3>내 카드 목록</h3>
+<ul>
+  {% for card in my_cards %}
+    <li>{{ card.card.name }} ({{ card.card.grade }})</li>
+  {% empty %}
+    <li>보유한 카드가 없습니다.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

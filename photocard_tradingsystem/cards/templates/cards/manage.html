@@ -1,108 +1,266 @@
-<h2>📋 발급된 카드 관리</h2>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>발급된 카드 관리</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 40px;
+    }
 
-<form method="get">
-  <label>등급:</label>
-  <select name="grade">
-    <option value="">전체</option>
-    {% for g in grades %}
-      <option value="{{ g.id }}">{{ g.name }}</option>
-    {% endfor %}
-  </select>
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
 
-  <label>카테고리:</label>
-  <select name="category">
-    <option value="">전체</option>
-    {% for c in categories %}
-      <option value="{{ c.id }}">{{ c.name }}</option>
-    {% endfor %}
-  </select>
+    .section-box {
+      background-color: white;
+      border-radius: 12px;
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
 
-  <label>소유자:</label>
-  <select name="owner">
-    <option value="">전체</option>
-    {% for o in owners %}
-      <option value="{{ o.id }}">{{ o.username }}</option>
-    {% endfor %}
-  </select>
+    h2, h3, h4 {
+      color: #2c3e50;
+      margin-top: 0;
+    }
 
-  <label>발급일:</label>
-  <input type="date" name="date">
+    /* 필터 컨트롤러 스타일 */
+    .filter-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 40px;
+      margin-bottom: 20px;
+    }
 
-  <label>정렬:</label>
-  <select name="sort">
-    <option value="recent">최신순</option>
-    <option value="name">이름순</option>
-    <option value="grade">등급순</option>
-  </select>
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      width: calc(50% - 20px);
+      min-width: 250px;
+    }
 
-  <button type="submit">조회</button>
-</form>
+    .filter-item label {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 6px;
+    }
 
-<form method="GET">
-    <fieldset style="border:1px solid #ccc; padding:15px; margin-bottom:20px;">
-        <legend>🔍 검색</legend>
-    
-        <label>카드명:</label>
-        <input type="text" name="search_name">
-    
-        <label>소유자:</label>
-        <input type="text" name="search_owner">
-    
-        <label>카드 ID:</label>
-        <input type="number" name="search_id">
-        
+    .filter-item input,
+    .filter-item select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    table th {
+      background-color: #ecf0f1;
+      color: #2c3e50;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      padding: 4px 0;
+      color: #34495e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📋 발급된 카드 관리</h2>
+
+    <!-- 🎛️ 검색 컨트롤러 -->
+    <div class="section-box">
+      <h3>🎛️ 카드 검색 컨트롤러</h3>
+      <form method="get">
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label>등급:</label>
+            <select name="grade">
+              <option value="">전체</option>
+              {% for g in grades %}
+                <option value="{{ g.id }}">{{ g.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label>카테고리:</label>
+            <select name="category">
+              <option value="">전체</option>
+              {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label>소유자:</label>
+            <select name="owner">
+              <option value="">전체</option>
+              {% for o in owners %}
+                <option value="{{ o.id }}">{{ o.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label>발급일:</label>
+            <input type="date" name="date">
+          </div>
+
+          <div class="filter-item">
+            <label>정렬:</label>
+            <select name="sort">
+              <option value="recent">최신순</option>
+              <option value="name">이름순</option>
+              <option value="grade">등급순</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label>카드명:</label>
+            <input type="text" name="search_name">
+          </div>
+
+          <div class="filter-item">
+            <label>소유자 (이름):</label>
+            <input type="text" name="search_owner">
+          </div>
+
+          <div class="filter-item">
+            <label>카드 ID:</label>
+            <input type="number" name="search_id">
+          </div>
+        </div>
         <button type="submit">조회</button>
-      </fieldset>
-    
-</form>
+      </form>
+    </div>
 
-<hr>
-<table border="1" cellpadding="8">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>카드명</th>
-      <th>등급</th>
-      <th>카테고리</th>
-      <th>소유자</th>
-      <th>발급일</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for uc in cards %}
-    <tr>
-      <td>{{ forloop.counter }}</td>
-      <td>{{ uc.card.name }}</td>
-      <td>{{ uc.card.grade }}</td>
-      <td>{{ uc.card.category }}</td>
-      <td>{{ uc.owner.username }}</td>
-      <td>{{ uc.acquired_at|date:"Y-m-d H:i" }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="6">조건에 맞는 카드가 없습니다.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <!-- 📑 카드 목록 -->
+    <div class="section-box">
+      <h3>📑 카드 목록</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>카드명</th>
+            <th>등급</th>
+            <th>카테고리</th>
+            <th>소유자</th>
+            <th>발급일</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for uc in cards %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ uc.card.name }}</td>
+            <td>{{ uc.card.grade }}</td>
+            <td>{{ uc.card.category }}</td>
+            <td>{{ uc.owner.username }}</td>
+            <td>{{ uc.acquired_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6">조건에 맞는 카드가 없습니다.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-<hr>
-<h3>📊 카드 통계 대시보드</h3>
+    <!-- 📊 통계 대시보드 -->
+    <div class="section-box">
+      <h3>📊 카드 통계 대시보드</h3>
 
-<p><strong>총 발급된 카드 수:</strong> {{ total_count }}</p>
+      <h4>총 발급된 카드 수</h4>
+      <p><strong>{{ total_count }}</strong> 장</p>
 
-<h3>👥 사용자별 보유 카드 수</h3>
-<ul>
-  {% for row in user_counts %}
-    <li>{{ row.owner__username }}: {{ row.count }}장</li>
-  {% empty %}
-    <li>보유 정보 없음</li>
-  {% endfor %}
-</ul>
+      <h4>👥 사용자별 보유 카드 수</h4>
+      <ul>
+        {% for row in user_counts %}
+          <li>{{ row.owner__username }}: {{ row.count }}장</li>
+        {% empty %}
+          <li>보유 정보 없음</li>
+        {% endfor %}
+      </ul>
 
-<h3>⭐ 등급별 카드 분포</h3>
-<ul>
-  {% for row in grade_counts %}
-    <li>{{ row.card__grade__name }}: {{ row.count }}장</li>
-  {% empty %}
-    <li>등급 정보 없음</li>
-  {% endfor %}
-</ul>
+      <h4>⭐ 등급별 카드 분포</h4>
+      <ul>
+        {% for row in grade_counts %}
+          <li>{{ row.card__grade__name }}: {{ row.count }}장</li>
+        {% empty %}
+          <li>등급 정보 없음</li>
+        {% endfor %}
+      </ul>
+      <canvas id="gradeChart" width="400" height="200" style="margin-top: 20px;"></canvas>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        const gradeCtx = document.getElementById('gradeChart').getContext('2d');
+        const gradeChart = new Chart(gradeCtx, {
+          type: 'bar',
+          data: {
+            labels: {{ grade_chart_labels|safe }},
+            datasets: [{
+              label: '등급별 카드 수',
+              data: {{ grade_chart_data|safe }},
+              backgroundColor: 'rgba(255, 159, 64, 0.6)',
+              borderColor: 'rgba(255, 159, 64, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+              }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      </script>
+    </div>
+  </div>
+</body>
+</html>

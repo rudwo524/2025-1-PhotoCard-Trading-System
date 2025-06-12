@@ -3,16 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ card.name }} 상세 정보</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .card-detail {
+      background-color: #ffffff;
+      max-width: 600px;
+      margin: 40px auto;  /* 상단 여백 + 가로 가운데 정렬 */
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-detail h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    .card-detail p {
+      font-size: 16px;
+      color: #34495e;
+      margin-bottom: 10px;
+    }
+
+    .card-detail img {
+      display: block;
+      margin: 20px auto;
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .edit-btn,
+    .back-btn {
+      display: inline-block;
+      padding: 8px 14px;
+      margin-top: 10px;
+      margin-right: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .edit-btn {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .back-btn {
+      background-color: #7f8c8d;
+      color: white;
+    }
+
+    .back-btn:hover {
+      background-color: #606c76;
+    }
+  </style>
 </head>
 <body>
-  <h1>{{ card.name }}</h1>
-  <p><strong>카테고리:</strong> {{ card.category.name }}</p>
-  <p><strong>등급:</strong> {{ card.grade.name }}</p>
-  <p><strong>설명:</strong> {{ card.description }}</p>
-  {% if card.image_url %}
-    <img src="{{ card.image_url.url }}" alt="{{ card.name }}" style="max-width:300px;">
-  {% endif %}
-  <p><a href="{% url 'update_card' card.pk %}">수정하기</a></p>
-  <p><a href="{% url 'card_list' %}">← 목록으로</a></p>
+  <div class="card-detail">
+    <h1>{{ card.name }}</h1>
+    <p><strong>카테고리:</strong> {{ card.category.name }}</p>
+    <p><strong>등급:</strong> {{ card.grade.name }}</p>
+    <p><strong>설명:</strong> {{ card.description }}</p>
+    {% if card.image_url %}
+      <img src="{{ card.image_url.url }}" alt="{{ card.name }}">
+    {% endif %}
+    <div>
+      <a href="{% url 'update_card' card.pk %}" class="edit-btn">수정하기</a>
+      <a href="{% url 'card_list' %}" class="back-btn">← 목록으로</a>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,9 +1,103 @@
-<h2>등급 {% if form.instance.pk %}수정{% else %}추가{% endif %}</h2>
+{% load static %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">저장</button>
-</form>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>등급 {% if form.instance.pk %}수정{% else %}추가{% endif %}</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 40px;
+    }
 
-<a href="{% url 'grades' %}">목록으로 돌아가기</a>
+    .form-container {
+      background-color: white;
+      max-width: 600px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    form label {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: border-color 0.2s ease-in-out;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 8px 14px;
+      background-color: #7f8c8d;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .back-link:hover {
+      background-color: #606c76;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>등급 {% if form.instance.pk %}수정{% else %}추가{% endif %}</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">저장</button>
+    </form>
+    <a href="{% url 'grades' %}" class="back-link">← 목록으로 돌아가기</a>
+  </div>
+</body>
+</html>

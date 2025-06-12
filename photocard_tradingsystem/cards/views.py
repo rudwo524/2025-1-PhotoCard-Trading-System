@@ -1,16 +1,18 @@
 # Create your views here.
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from .models import Card, Category, Grade, User, CreatedCard, Trade, TradeRequest
 from .forms import CardForm, CategoryForm, GradeForm, DrawCardForm, CreatedCard
-import os
 from django.conf import settings
-import random
 from django.db.models import Q, Count
 # from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.admin.views.decorators import staff_member_required
+import os
+import random
 
 def card_list(request):
     cards = Card.objects.all()
@@ -56,6 +58,7 @@ def update_card(request, pk):
         form = CardForm(instance=card)
     return render(request, 'cards/card_form.html', {'form': form, 'card': card})
 
+# 카드 추가
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -66,10 +69,12 @@ def add_category(request):
         form = CategoryForm()
     return render(request, 'cards/add_categories.html', {'form': form}) 
 
+# 카테고리 리스트
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'cards/category_list.html', {'categories': categories})
 
+# 카테고리 업데이트
 def category_update(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
@@ -81,6 +86,7 @@ def category_update(request, pk):
         form = CategoryForm(instance=category)
     return render(request, 'cards/category_update.html', {'form': form})
 
+# 카테고리 삭제
 def category_delete(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
@@ -88,10 +94,12 @@ def category_delete(request, pk):
         return redirect('categories')
     return render(request, 'cards/category_confirm_delete.html', {'category': category})
 
+# 등급 리스트
 def grade_list(request):
     grades = Grade.objects.all()
     return render(request, 'cards/grade_list.html', {'grades': grades})
 
+# 등급 추가
 def add_grade(request):
     if request.method == 'POST':
         form = GradeForm(request.POST)
@@ -102,6 +110,7 @@ def add_grade(request):
         form = GradeForm()
     return render(request, 'cards/grade_form.html', {'form': form})
 
+# 등급 수정
 def update_grade(request, pk):
     grade = get_object_or_404(Grade, pk=pk)
     if request.method == 'POST':
@@ -113,6 +122,7 @@ def update_grade(request, pk):
         form = GradeForm(instance=grade)
     return render(request, 'cards/grade_form.html', {'form': form})
 
+# 등급 삭제
 def delete_grade(request, pk):
     grade = get_object_or_404(Grade, pk=pk)
     if request.method == 'POST':
@@ -151,39 +161,99 @@ def delete_grade(request, pk):
 #         form = None
 #     return render(request, 'cards/draw_card.html', {'form': form, 'card': card, 'users':users})
 
-def draw_card(request):
+# def draw_card(request):
 
+#     users = User.objects.all()
+#     card = None
+#     selected_user_id = None
+
+#     if request.method == 'POST':
+#         form = DrawCardForm(request.POST)
+#         # if form.created_at == None: # 카드 생성 시간 추가가
+#         #     import time
+#         #     form.created_at = time.time()
+#         if form.is_valid():
+#             form.save()
+#             return redirect('draw_card')
+#     else:
+#         # 랜덤 카드 선택
+#         card = random.choice(Card.objects.all())
+#         form = DrawCardForm(initial={'card': card})
+
+#         # 유저 전체 목록 (드롭다운용)
+#     users = User.objects.all()
+
+#     # 선택된 유저의 카드 목록 조회
+#     if not selected_user_id:
+#         selected_user_id = form.initial.get('owner') or users.first().id
+#     my_cards = CreatedCard.objects.filter(owner_id=selected_user_id).select_related('card')
+
+#     return render(request, 'cards/draw_card.html', {
+#         'form': form,
+#         'card': card,
+#         'my_cards': my_cards,
+#         'users': users
+#     })
+
+# @login_required
+# def draw_card(request):
+#     user = request.user
+#     card = None
+
+#     if request.method == 'POST':
+#         # 카드 뽑기 요청 → 랜덤 카드 발급
+#         card = random.choice(Card.objects.all())
+#         CreatedCard.objects.create(card=card, owner=user)
+#         messages.success(request, f"{card.name} 카드를 뽑았습니다!")
+#         return redirect('draw_card')
+
+#     else:
+#         # GET 요청 → 현재 카드 미리 보여주기 용
+#         my_cards = CreatedCard.objects.filter(owner=user).select_related('card')
+
+#     return render(request, 'cards/draw_card.html', {
+#         'my_cards': my_cards,
+#     })
+
+
+# 카드 뽑기(로그인 필요)
+@login_required
+def draw_card(request):
+    if request.method == 'POST':
+        card = random.choice(Card.objects.all())
+        CreatedCard.objects.create(card=card, owner=request.user)
+        return redirect('draw_card')
+    my_cards = CreatedCard.objects.filter(owner=request.user).select_related('card')
+    return render(request, 'cards/draw_card_user.html', {
+        'my_cards': my_cards
+    })
+
+# ✅ 관리자용 카드 뽑기 페이지
+@staff_member_required
+def draw_card_admin(request):
     users = User.objects.all()
     card = None
     selected_user_id = None
 
     if request.method == 'POST':
         form = DrawCardForm(request.POST)
-        # if form.created_at == None: # 카드 생성 시간 추가가
-        #     import time
-        #     form.created_at = time.time()
         if form.is_valid():
             form.save()
-            return redirect('draw_card')
+            return redirect('draw_card_admin')
     else:
-        # 랜덤 카드 선택
         card = random.choice(Card.objects.all())
         form = DrawCardForm(initial={'card': card})
 
-        # 유저 전체 목록 (드롭다운용)
-    users = User.objects.all()
-
-    # 선택된 유저의 카드 목록 조회
-    if not selected_user_id:
-        selected_user_id = form.initial.get('owner') or users.first().id
+    selected_user_id = form.initial.get('owner') or users.first().id
     my_cards = CreatedCard.objects.filter(owner_id=selected_user_id).select_related('card')
 
-    return render(request, 'cards/draw_card.html', {
+    return render(request, 'cards/draw_card_admin.html', {
         'form': form,
         'card': card,
         'my_cards': my_cards,
         'users': users
     })
+
 
 def manage_cards(request):
     cards = CreatedCard.objects.all()   # foreignkey로 설정해놔서 다 받아와짐
@@ -192,6 +262,8 @@ def manage_cards(request):
 
     user_counts = cards.values('owner__username').annotate(count=Count('id')).order_by('-count')
     grade_counts = cards.values('card__grade__name').annotate(count=Count('id')).order_by('-count')
+    labels = [row['card__grade__name'] for row in grade_counts]
+    data = [row['count'] for row in grade_counts]
 
     selected_grade = request.GET.get('grade')
     selected_category = request.GET.get('category')
@@ -242,6 +314,8 @@ def manage_cards(request):
         'total_count': total_count,
         'user_counts': user_counts,
         'grade_counts': grade_counts,
+        'grade_chart_labels': labels,
+        'grade_chart_data': data,
     }
     
     return render(request,'cards/manage.html',
@@ -341,5 +415,76 @@ def signup_view(request):
 
     return render(request, 'cards/signup.html')
 
+# def trading(request):
+#     return render(request, 'cards/trading.html')
+
 def trading(request):
-    return render(request, 'cards/trading.html')
+    cards = Card.objects.all()
+    card_data = []
+
+    for card in cards:
+        price = random.randint(500, 3500)  # 임의 가격
+        history = [random.randint(500, 3500) for _ in range(7)]  # 7일치 가격 추이
+
+        card_data.append({
+            'id': card.id,
+            'title': card.name,
+            'grade': card.grade.name if card.grade else '',
+            'category': card.category.name if card.category else '',
+            'description': card.description,
+            'image': card.image_url.url if card.image_url else '',
+            'price': price,
+            'history': history,
+        })
+
+    return render(request, 'cards/trading.html', {'card_data': card_data})
+
+@login_required
+def trade_approve(request, req_id):
+    req = get_object_or_404(TradeRequest, id=req_id, trade__seller=request.user)
+
+    if req.is_approved is not None:
+        messages.warning(request, '이미 처리된 요청입니다.')
+        return redirect('trade_requests_received')
+
+    # 1. 요청 승인 처리
+    req.is_approved = True
+    req.save()
+
+    # 2. 카드 소유권 이전
+    created_card = req.trade.created_card
+    created_card.owner = req.buyer
+    created_card.save()
+
+    # 3. 거래 비활성화
+    req.trade.is_active = False
+    req.trade.save()
+
+    # 4. 같은 거래의 다른 요청 모두 거절
+    TradeRequest.objects.filter(trade=req.trade).exclude(id=req.id).update(is_approved=False)
+
+    messages.success(request, '거래가 완료되어 카드 소유권이 이전되었습니다.')
+    return redirect('trade_requests_received')
+
+
+@login_required
+def card_manage(request):
+    # 본인 소유 카드만 보기
+    cards = CreatedCard.objects.filter(owner=request.user)
+
+    total_count = cards.count()
+    user_counts = cards.values('owner__username').annotate(count=Count('id')).order_by('-count')
+    grade_counts = cards.values('card__grade__name').annotate(count=Count('id')).order_by('-count')
+
+    # 등급별 차트용 데이터
+    labels = [row['card__grade__name'] for row in grade_counts]
+    data = [row['count'] for row in grade_counts]
+
+    return render(request, 'cards/manage.html', {
+        'cards': cards,
+        'total_count': total_count,
+        'user_counts': user_counts,
+        'grade_counts': grade_counts,
+        'grade_chart_labels': labels,
+        'grade_chart_data': data,
+    })

@@ -15,7 +15,7 @@ urlpatterns = [
     path('grades/add/', views.add_grade, name='add_grade'),
     path('grades/<int:pk>/edit/', views.update_grade, name='update_grade'),
     path('grades/<int:pk>/delete/', views.delete_grade, name='delete_grade'),
-    path('draw/', views.draw_card, name='draw_card'),
+    # path('draw/', views.draw_card, name='draw_card'),
     path('manage/', views.manage_cards, name='manage_cards'),
     path('trades/', views.trade_list, name='trade_list'),
     path('trades/sell/', views.trade_create, name='trade_create'),
@@ -26,4 +26,9 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup_view, name='signup'),
     path('trading/', views.trading, name='trading'),
+    # 📌 로그인한 유저용 뽑기 (자기 계정으로만)
+    path('draw/', views.draw_card, name='draw_card'),
+
+    # 📌 관리자용 뽑기 (다른 유저 골라서 발급)
+    path('admin/draw/', views.draw_card_admin, name='draw_card_admin'),
 ]

@@ -1,105 +1,115 @@
-
 {% load static %}
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>카테고리 등록</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f8f8;
-            margin: 0;
-            padding: 40px;
-        }
+  <meta charset="UTF-8">
+  <title>카테고리 등록</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 40px;
+    }
 
-        .form-container {
-            background-color: white;
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
+    .form-container {
+      background-color: white;
+      max-width: 600px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
 
-        label {
-            display: block;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #444;
-        }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
 
-        input[type="text"],
-        select,
-        textarea,
-        input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
+    input[type="text"],
+    select,
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: border-color 0.2s ease-in-out;
+    }
 
-        .form-error {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #3498db;
+      outline: none;
+    }
 
-        button {
-            margin-top: 25px;
-            width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+    .form-error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
 
-        button:hover {
-            background-color: #45a049;
-        }
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
 
-        .preview {
-            margin-top: 15px;
-            text-align: center;
-        }
+    button:hover {
+      background-color: #2980b9;
+    }
 
-        .preview img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-    </style>
+    .preview {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .preview img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  </style>
 </head>
 <body>
-<div class="form-container">
+  <div class="form-container">
     <h2>카테고리 등록</h2>
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {% for field in form %}
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-                <div class="form-error">
-                    {{ field.errors|striptags }}
-                </div>
-            {% endif %}
-        {% endfor %}
-        <button type="submit">등록하기</button>
+      {% csrf_token %}
+      {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="form-error">
+            {{ field.errors|striptags }}
+          </div>
+        {% endif %}
+      {% endfor %}
+      <button type="submit">등록하기</button>
     </form>
-</div>
-
+  </div>
 </body>
 </html>
