@@ -20,7 +20,7 @@
         .left, .right {
             height: 100%;
             display: flex;
-            flex-direction: column; /* 세로 정렬 */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-size: 2em;
@@ -44,8 +44,8 @@
         }
 
         .icon {
-            height: 50vh; /* 전체 화면의 50% 높이 */
-            max-width: 80%; /* 너비는 너무 커지지 않도록 제한 */
+            height: 50vh;
+            max-width: 80%;
             object-fit: contain;
         }
 
@@ -61,7 +61,13 @@
             <div class="label">Go to Cards</div>
         </div>
     </a>
-    <a href="/cards/trading/">
+
+    <!-- 로그인 여부에 따라 트레이딩 페이지 이동 경로 변경 -->
+    {% if user.is_authenticated %}
+        <a href="/cards/trading/">
+    {% else %}
+        <a href="{% url 'login' %}?next=/cards/trading/">
+    {% endif %}
         <div class="right">
             <img src="/media/background/trade.png" alt="Trade Icon" class="icon">
             <div class="label">Go to Trade</div>

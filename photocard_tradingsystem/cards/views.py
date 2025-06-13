@@ -327,7 +327,9 @@ def manage_cards(request):
 @login_required
 def trade_list(request):
     trades = Trade.objects.filter(is_active=True).exclude(seller=request.user)
+    print(request.user)
     return render(request, 'cards/trade_list.html', {'trades': trades})
+
 
 @login_required
 def trade_create(request):
