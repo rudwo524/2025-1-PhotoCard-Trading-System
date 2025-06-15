@@ -14,9 +14,9 @@
     header {
       background-color: #2c3e50;
       padding: 20px;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: #ecf0f1;
       margin-bottom: 20px;
     }
@@ -85,7 +85,16 @@
       margin-bottom: 20px;
     }
 
-    .top-buttons a {
+    .top-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .left-buttons a,
+    .right-buttons a {
       margin-right: 10px;
       padding: 6px 12px;
       background-color: #7f8c8d;
@@ -95,18 +104,87 @@
       font-size: 14px;
     }
 
-    .top-buttons a:hover {
+    .left-buttons a:hover,
+    .right-buttons a:hover {
+      background-color: #606c76;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content .close {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .gray-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: #7f8c8d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .gray-btn:hover {
       background-color: #606c76;
     }
   </style>
 </head>
 <body>
-  <header>📇 카드 목록</header>
-  <div class="top-buttons">
-    <a href="{% url 'add_card' %}">카드 등록</a>
-    <a href="{% url 'add_category' %}">카테고리 등록</a>
-    <a href="{% url 'add_grade' %}">등급 등록</a>
-  </div>
+  <header>
+    <a href="{% url 'main_page' %}" style="
+      padding: 6px 12px;
+      background-color: #7f8c8d;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+    ">홈</a>
+    
+    <div style="flex: 1; text-align: center; font-size: 28px; font-weight: bold;">
+      카드 목록
+    </div>
+    <div class="right-buttons">
+      {% if user.is_authenticated %}
+        <button id="drawCardBtn" class="gray-btn">카드 뽑기</button>
+        <button onclick="location.href='{% url 'manage_cards' %}'" class="gray-btn">마이페이지</button>
+        <button onclick="location.href='{% url 'logout' %}?next=/cards/'" class="gray-btn">로그아웃</button>
+      {% else %}
+        <button onclick="location.href='{% url 'login' %}?next=/cards/'" class="gray-btn">로그인</button>
+      {% endif %}
+    </div>
+
+    <div class="top-buttons">
+      <div class="left-buttons">
+        {% if user.is_superuser %}
+          <button onclick="location.href='{% url 'add_card' %}'" class="gray-btn">카드 등록</button>
+          <button onclick="location.href='{% url 'add_category' %}'" class="gray-btn">카테고리 등록</button>
+          <button onclick="location.href='{% url 'add_grade' %}'" class="gray-btn">등급 등록</button>
+        {% endif %}
+      </div>
+    </div>
+  </header>
 
   <div class="card-list">
     {% for card in cards %}
@@ -120,11 +198,60 @@
             <p>등급: {{ card.grade }}</p>
           </div>
         </a>
-        <a href="{% url 'update_card' card.pk %}" class="edit-btn">수정하기</a>
+        {% if user.is_superuser %}
+          <a href="{% url 'update_card' card.pk %}" class="edit-btn">수정하기</a>
+        {% endif %}
       </div>
     {% empty %}
       <p>등록된 카드가 없습니다.</p>
     {% endfor %}
   </div>
+    
+  <!-- modal structure -->
+  <div id="cardModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <img id="cardImage" src="" alt="" style="width: 200px;">
+      <h3 id="cardName"></h3>
+      <p id="cardInfo"></p>
+    </div>
+  </div>
 </body>
+
+<script>
+  document.getElementById("drawCardBtn").addEventListener("click", async () => {
+    try {
+      const res = await fetch("{% url 'draw_card' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
+      const data = await res.json();
+
+      // 모달 내용 채우기
+      document.getElementById("cardImage").src = data.image_url;
+      document.getElementById("cardName").textContent = data.card_name;
+      document.getElementById("cardInfo").textContent = `등급: ${data.grade} / 카테고리: ${data.category}`;
+      document.getElementById("cardModal").style.display = "block";
+    } catch (err) {
+      alert("카드 뽑기 실패!");
+      console.error(err);
+    }
+  });
+
+  function closeModal() {
+    document.getElementById("cardModal").style.display = "none";
+  }
+
+  function getCookie(name) {
+    const cookies = document.cookie.split("; ");
+    for (let c of cookies) {
+      const [key, val] = c.split("=");
+      if (key === name) return decodeURIComponent(val);
+    }
+    return null;
+  }
+</script>
 </html>

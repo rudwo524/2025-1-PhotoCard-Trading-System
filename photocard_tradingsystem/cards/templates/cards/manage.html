@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>발급된 카드 관리</title>
+  <title>마이페이지</title>
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
@@ -29,7 +29,6 @@
       margin-top: 0;
     }
 
-    /* 필터 컨트롤러 스타일 */
     .filter-grid {
       display: flex;
       flex-wrap: wrap;
@@ -102,15 +101,54 @@
       padding: 4px 0;
       color: #34495e;
     }
+
+    
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: 20px;
+      color: #2c3e50;
+    }
+
+    .header-btn {
+      width: 90px;
+      padding: 6px 10px;
+      background-color: #7f8c8d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .header-btn:hover {
+      background-color: #606c76;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📋 발급된 카드 관리</h2>
+    <div class="header-bar">
+      <button type="button" onclick="location.href='{% url 'main_page' %}'" class="header-btn">홈으로</button>
+      <h2 class="header-title">마이페이지</h2>
+      <button onclick="history.back()" class="header-btn">뒤로가기</button>
+    </div>
 
-    <!-- 🎛️ 검색 컨트롤러 -->
+    <!-- 카드 검색 필터 -->
     <div class="section-box">
-      <h3>🎛️ 카드 검색 컨트롤러</h3>
+      <h3>카드 검색</h3>
       <form method="get">
         <div class="filter-grid">
           <div class="filter-item">
@@ -118,7 +156,7 @@
             <select name="grade">
               <option value="">전체</option>
               {% for g in grades %}
-                <option value="{{ g.id }}">{{ g.name }}</option>
+                <option value="{{ g.id }}" {% if g.id|stringformat:"s" == selected_grade %}selected{% endif %}>{{ g.name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -128,57 +166,58 @@
             <select name="category">
               <option value="">전체</option>
               {% for c in categories %}
-                <option value="{{ c.id }}">{{ c.name }}</option>
+                <option value="{{ c.id }}" {% if c.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ c.name }}</option>
               {% endfor %}
             </select>
           </div>
 
-          <div class="filter-item">
-            <label>소유자:</label>
-            <select name="owner">
-              <option value="">전체</option>
-              {% for o in owners %}
-                <option value="{{ o.id }}">{{ o.username }}</option>
-              {% endfor %}
-            </select>
-          </div>
+          {% if request.user.is_superuser %}
+            <div class="filter-item">
+              <label>소유자:</label>
+              <select name="owner">
+                <option value="">전체</option>
+                {% for o in owners %}
+                  <option value="{{ o.id }}" {% if o.id|stringformat:"s" == selected_owner %}selected{% endif %}>{{ o.username }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>소유자 (이름):</label>
+              <input type="text" name="search_owner" value="{{ search_owner }}">
+            </div>
+          {% endif %}
 
           <div class="filter-item">
             <label>발급일:</label>
-            <input type="date" name="date">
+            <input type="date" name="date" value="{{ selected_date }}">
           </div>
 
           <div class="filter-item">
             <label>정렬:</label>
             <select name="sort">
-              <option value="recent">최신순</option>
-              <option value="name">이름순</option>
-              <option value="grade">등급순</option>
+              <option value="recent" {% if sort_option == "recent" or not sort_option %}selected{% endif %}>최신순</option>
+              <option value="name" {% if sort_option == "name" %}selected{% endif %}>이름순</option>
+              <option value="grade" {% if sort_option == "grade" %}selected{% endif %}>등급순</option>
             </select>
           </div>
 
           <div class="filter-item">
             <label>카드명:</label>
-            <input type="text" name="search_name">
-          </div>
-
-          <div class="filter-item">
-            <label>소유자 (이름):</label>
-            <input type="text" name="search_owner">
+            <input type="text" name="search_name" value="{{ search_name }}">
           </div>
 
           <div class="filter-item">
             <label>카드 ID:</label>
-            <input type="number" name="search_id">
+            <input type="number" name="search_id" value="{{ search_id }}">
           </div>
         </div>
         <button type="submit">조회</button>
       </form>
     </div>
 
-    <!-- 📑 카드 목록 -->
+    <!-- 카드 목록 -->
     <div class="section-box">
-      <h3>📑 카드 목록</h3>
+      <h3>카드 목록</h3>
       <table>
         <thead>
           <tr>
@@ -187,7 +226,7 @@
             <th>등급</th>
             <th>카테고리</th>
             <th>소유자</th>
-            <th>발급일</th>
+            <th>최근 거래가 판매</th>
           </tr>
         </thead>
         <tbody>
@@ -198,7 +237,9 @@
             <td>{{ uc.card.grade }}</td>
             <td>{{ uc.card.category }}</td>
             <td>{{ uc.owner.username }}</td>
-            <td>{{ uc.acquired_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              <button onclick="quickRegisterTrade({{ uc.id }}, {{ uc.card.id }})">등록</button>
+            </td>
           </tr>
           {% empty %}
           <tr><td colspan="6">조건에 맞는 카드가 없습니다.</td></tr>
@@ -207,60 +248,114 @@
       </table>
     </div>
 
-    <!-- 📊 통계 대시보드 -->
+    <!-- 통계 대시보드 -->
     <div class="section-box">
-      <h3>📊 카드 통계 대시보드</h3>
+      <h3>통계 대시보드</h3>
 
-      <h4>총 발급된 카드 수</h4>
+      <h4>총 보유 카드 수</h4>
       <p><strong>{{ total_count }}</strong> 장</p>
 
-      <h4>👥 사용자별 보유 카드 수</h4>
+      <h4>사용자별 카드 수</h4>
       <ul>
         {% for row in user_counts %}
           <li>{{ row.owner__username }}: {{ row.count }}장</li>
         {% empty %}
-          <li>보유 정보 없음</li>
+          <li>정보 없음</li>
         {% endfor %}
       </ul>
 
-      <h4>⭐ 등급별 카드 분포</h4>
+      <h4>등급별 카드 분포</h4>
       <ul>
         {% for row in grade_counts %}
           <li>{{ row.card__grade__name }}: {{ row.count }}장</li>
         {% empty %}
-          <li>등급 정보 없음</li>
+          <li>정보 없음</li>
         {% endfor %}
       </ul>
+
       <canvas id="gradeChart" width="400" height="200" style="margin-top: 20px;"></canvas>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <script>
-        const gradeCtx = document.getElementById('gradeChart').getContext('2d');
-        const gradeChart = new Chart(gradeCtx, {
-          type: 'bar',
-          data: {
-            labels: {{ grade_chart_labels|safe }},
-            datasets: [{
-              label: '등급별 카드 수',
-              data: {{ grade_chart_data|safe }},
-              backgroundColor: 'rgba(255, 159, 64, 0.6)',
-              borderColor: 'rgba(255, 159, 64, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { stepSize: 1 }
-              }
-            },
-            plugins: {
-              legend: { display: false }
-            }
-          }
-        });
-      </script>
+      
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const gradeCtx = document.getElementById('gradeChart').getContext('2d');
+    const gradeChart = new Chart(gradeCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ grade_chart_labels|safe }},
+        datasets: [{
+          label: '등급별 카드 수',
+          data: {{ grade_chart_data|safe }},
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    async function quickRegisterTrade(createdCardId, cardId) {
+      try {
+        // 최근 거래 가격 가져오기
+        const res = await fetch(`/cards/api/available_trades/?card_id=${cardId}`);
+        const data = await res.json();
+
+        const recentPrice = data.trades.length > 0
+          ? data.trades[data.trades.length - 1].price
+          : 1000;
+
+        const body = {
+          card_id: cardId,
+          price: recentPrice
+        };
+
+        const response = await fetch("/cards/api/register_trade/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+          body: JSON.stringify(body),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("빠른 판매 등록 완료!");
+          location.reload(); // 새로고침
+        } else {
+          alert(result.message || "등록 실패");
+        }
+      } catch (error) {
+        alert("서버 오류");
+        console.error(error);
+      }
+    }
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // name=... 형태 찾기
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
 </body>
 </html>

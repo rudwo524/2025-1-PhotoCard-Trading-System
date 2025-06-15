@@ -25,10 +25,16 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup_view, name='signup'),
-    path('trading/', views.trading, name='trading'),
     # 📌 로그인한 유저용 뽑기 (자기 계정으로만)
     path('draw/', views.draw_card, name='draw_card'),
 
     # 📌 관리자용 뽑기 (다른 유저 골라서 발급)
     path('admin/draw/', views.draw_card_admin, name='draw_card_admin'),
+
+    path('get_trades/', views.get_active_trades, name='get_active_trades'),
+    path('trading/', views.trading, name='trading'),
+    path('api/register_trade/', views.register_trade, name='register_trade'),
+    path('api/request_purchase_by_price/', views.request_purchase_by_price, name='request_purchase_by_price'),
+    path('api/available_trades/', views.get_available_trades_by_card, name='get_available_trades_by_card'),
+    path('api/request_purchase/', views.request_purchase, name='request_purchase'),
 ]

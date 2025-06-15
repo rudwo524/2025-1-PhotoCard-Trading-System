@@ -1,6 +1,15 @@
 <a href="{% url 'draw_card' %}" class="btn">카드 뽑기</a>
 
 <h2>거래 가능 카드 목록</h2>
+<ul>
+{% for card in cards %}
+  <li>{{ card.card.name }} ({{ card.card.grade }})</li>
+{% empty %}
+  거래 가능한 카드가 없습니다.
+{% endfor %}
+</ul>
+
+<h2>거래 중인 카드 목록</h2>
 {% for trade in trades %}
   <div>
     <strong>{{ trade.created_card.card.name }}</strong> - {{ trade.price }}원

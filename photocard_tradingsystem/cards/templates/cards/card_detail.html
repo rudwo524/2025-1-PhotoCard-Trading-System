@@ -83,7 +83,9 @@
       <img src="{{ card.image_url.url }}" alt="{{ card.name }}">
     {% endif %}
     <div>
-      <a href="{% url 'update_card' card.pk %}" class="edit-btn">수정하기</a>
+      {% if user.is_superuser %}
+        <a href="{% url 'update_card' card.pk %}" class="edit-btn">수정하기</a>
+      {% endif %}
       <a href="{% url 'card_list' %}" class="back-btn">← 목록으로</a>
     </div>
   </div>

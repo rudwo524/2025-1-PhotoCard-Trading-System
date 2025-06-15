@@ -148,3 +148,11 @@ class TradeRequest(models.Model):
     buyer = models.ForeignKey(User, related_name='buy_requests', on_delete=models.CASCADE)
     is_approved = models.BooleanField(null=True)  # None: 대기, True: 승인, False: 거절
     requested_at = models.DateTimeField(auto_now_add=True)
+
+    
+class PurchaseRequest(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    price = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_matched = models.BooleanField(default=False)

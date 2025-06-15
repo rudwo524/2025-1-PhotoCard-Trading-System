@@ -126,3 +126,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'    # 이미지 업로드 설정
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 이미지 업로드 설정
+
+
+SESSION_COOKIE_AGE = 300  # 5분 (초 단위)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 닫으면 세션 삭제
