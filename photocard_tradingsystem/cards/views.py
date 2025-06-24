@@ -37,9 +37,9 @@ def add_card(request):
         form = CardForm() 
     if form.is_valid():
         form.save()
-        # 이전 페이지로 리디렉션
-        referer = request.META.get('HTTP_REFERER')
-        return redirect(referer if referer else 'card_list')
+        # # 이전 페이지로 리디렉션
+        # referer = request.META.get('HTTP_REFERER')
+        return redirect(card_list)
     else:
         form = CardForm()
     return render(request, 'cards/card_form.html', {'form': form})
@@ -415,7 +415,8 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    referer = request.META.get('HTTP_REFERER','/')
+    return redirect(referer)
 
 
 def signup_view(request):

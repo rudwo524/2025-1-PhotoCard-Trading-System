@@ -1,23 +1,115 @@
-<!-- <h2>카테고리 목록</h2>
-<ul>
-  {% for category in categories %}
-    <li>{{ category.name }} - {{ category.Year }}</li>
-  {% empty %}
-    <li>등록된 카테고리가 없습니다.</li>
-  {% endfor %}
-</ul> -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>카테고리 목록</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 20px;
+    }
 
-<h1>카테고리 목록</h1>
-<a href="{% url 'add_category' %}">카테고리 등록</a>
+    header {
+      background-color: #2c3e50;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ecf0f1;
+      margin-bottom: 20px;
+    }
 
-<ul>
-  {% for category in categories %}
-    <li>
-      {{ category.name }} ({{ category.Year }})
-      <a href="{% url 'category_update' category.pk %}">✏️ 수정</a>
-      <a href="{% url 'category_delete' category.pk %}">🗑 삭제</a>
-    </li>               
-  {% empty %}
-    <li>등록된 카테고리가 없습니다.</li>
-  {% endfor %}
-</ul>
+    .gray-btn {
+      padding: 6px 12px;
+      background-color: #7f8c8d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .gray-btn:hover {
+      background-color: #606c76;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #34495e;
+      color: white;
+      font-weight: bold;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .actions a {
+      margin: 0 4px;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 16px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{% url 'main_page' %}" class="gray-btn">홈</a>
+    <div style="flex: 1; text-align: center; font-size: 28px; font-weight: bold;">카테고리 목록</div>
+    <div>
+      <a href="{% url 'add_category' %}" class="gray-btn">카테고리 등록</a>
+    </div>
+  </header>
+
+  {% if categories %}
+    <table>
+      <thead>
+        <tr>
+          <th>카테고리명</th>
+          <th>연도</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+          <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.Year }}</td>
+            <td class="actions">
+              <a href="{% url 'category_update' category.pk %}" class="gray-btn">✏ 수정</a>
+              <a href="{% url 'category_delete' category.pk %}" class="gray-btn">🗑 삭제</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-msg">등록된 카테고리가 없습니다.</div>
+  {% endif %}
+</body>
+</html>

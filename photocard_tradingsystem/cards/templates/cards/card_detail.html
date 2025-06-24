@@ -71,9 +71,44 @@
     .back-btn:hover {
       background-color: #606c76;
     }
+    
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: 20px;
+      color: #2c3e50;
+    }
+
+    .header-btn {
+      width: 90px;
+      padding: 6px 10px;
+      background-color: #7f8c8d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .header-btn:hover {
+      background-color: #606c76;
+    }
   </style>
 </head>
 <body>
+  
   <div class="card-detail">
     <h1>{{ card.name }}</h1>
     <p><strong>카테고리:</strong> {{ card.category.name }}</p>

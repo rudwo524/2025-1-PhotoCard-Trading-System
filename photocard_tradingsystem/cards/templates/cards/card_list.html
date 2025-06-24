@@ -175,18 +175,22 @@
       {% endif %}
     </div>
 
-    <div class="top-buttons">
-      <div class="left-buttons">
-        {% if user.is_superuser %}
-          <button onclick="location.href='{% url 'add_card' %}'" class="gray-btn">카드 등록</button>
-          <button onclick="location.href='{% url 'add_category' %}'" class="gray-btn">카테고리 등록</button>
-          <button onclick="location.href='{% url 'add_grade' %}'" class="gray-btn">등급 등록</button>
-        {% endif %}
-      </div>
-    </div>
-  </header>
+    <!-- <div class="top-buttons">  -->
 
+    <!-- </div> -->
+  </header>
+  <div>
+    <div class="left-buttons">
+      {% if user.is_superuser %}
+        <button onclick="location.href='{% url 'add_card' %}'" class="gray-btn">카드 등록</button>
+        <button onclick="location.href='{% url 'add_category' %}'" class="gray-btn">카테고리 등록</button>
+        <button onclick="location.href='{% url 'add_grade' %}'" class="gray-btn">등급 등록</button>
+      {% endif %}
+    </div>
+  </div>
+  
   <div class="card-list">
+
     {% for card in cards %}
       <div class="card-item">
         <a href="{% url 'card_detail' card.pk %}">
@@ -194,7 +198,7 @@
           <div class="card-info">
             <h3>{{ card.name }}</h3>
             <p>카테고리: {{ card.category }}</p>
-            <p>설명: {{ card.description|truncatechars:30 }}</p>
+            <!-- <p>설명: {{ card.description|truncatechars:30 }}</p> -->
             <p>등급: {{ card.grade }}</p>
           </div>
         </a>

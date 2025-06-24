@@ -1,7 +1,98 @@
-<h2>등급 삭제 확인</h2>
-<p>정말 "{{ grade.name }}" 등급을 삭제하시겠습니까?</p>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">삭제</button>
-    <a href="{% url 'grades' %}">취소</a>
-</form>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>등급 삭제</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #eef4f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    header {
+      background-color: #2c3e50;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ecf0f1;
+      margin-bottom: 20px;
+    }
+
+    .delete-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h2 {
+      color: #c0392b;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .danger-btn {
+      background-color: #e74c3c;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .danger-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .gray-btn {
+      background-color: #7f8c8d;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .gray-btn:hover {
+      background-color: #606c76;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{% url 'main_page' %}" class="gray-btn">홈</a>
+    <div style="flex: 1; text-align: center; font-size: 24px; font-weight: bold;">등급 삭제</div>
+    <div></div>
+  </header>
+
+  <div class="delete-container">
+    <h2>등급 삭제 확인</h2>
+    <p>정말 "{{ grade.name }}" 등급을 삭제하시겠습니까?</p>
+
+    <form method="post" class="btn-group">
+      {% csrf_token %}
+      <button type="submit" class="danger-btn">삭제</button>
+      <a href="{% url 'grades' %}" class="gray-btn">취소</a>
+    </form>
+  </div>
+</body>
+</html>
